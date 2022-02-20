@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom';
-
-import Button from '@mui/material/Button';
-
-import { Link } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Link
+} from "react-router-dom";
+import Expenses from "./Expenses";
+import Invoices from "./Invoices";
+import Products from "./components/Products/Products"
+import ProductView from "./components/ProductView/productView"
 
 import axios from 'axios';
 
@@ -14,6 +19,7 @@ const API_URL='https://httpbin.org'
 export default function App() {
 
   const [mydata, setMydata] = useState({});
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
     fetchData();
@@ -29,17 +35,16 @@ export default function App() {
 
   return (
     <div>
-      <h1>Bookkeeper</h1>
-      <nav
-        style={{
-          borderBottom: "solid 1px",
-          paddingBottom: "1rem"
-        }}
-      >
-        <Link to="/invoices">Invoices</Link> |{" "}
-        <Link to="/expenses">Expenses</Link> |{" "}
-        <Button variant="contained">Hello World</Button>
-      </nav>
+  <BrowserRouter>
+    <Routes>
+      <Route exact path="/" element={<App />} />
+      <Route exact path="/pro" element={<Products products={products} />} />
+      <Route path="/cart" element={<Expenses />} />
+      <Route path="/checkout" element={<Invoices />} />
+      <Route path="/product-view/:id" element={<ProductView />} />
+      <Route path="/invoices" element={<Invoices />} />
+    </Routes>
+  </BrowserRouter>
     </div>
   );
 }
