@@ -24,7 +24,7 @@ const CartItem = ({ item, onUpdateCartQty, onRemoveFromCart }) => {
         }}
       >
         <Typography variant="h6">{item.name}</Typography>
-        <Typography variant="h6" color='secondary' >JPY&nbsp;{item.line_total.raw}</Typography>
+        <Typography variant="h6" color='secondary' >JPY&nbsp;{item.line_total}</Typography>
       </CardContent>
       <CardActions sx={{justifyContent: 'space-between',}}>
         <Box display="flex" justifyContent="space-between">

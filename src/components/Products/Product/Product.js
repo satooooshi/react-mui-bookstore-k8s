@@ -8,29 +8,30 @@ import Typography from '@mui/material/Typography';
 
 import { Link } from 'react-router-dom';
 
-export default function ImgMediaCard() {
+export default function ImgMediaCard({product, onAddToCart}) {
   return (
     <Card sx={{ maxWidth: 345 }}>
       <CardMedia
         component="img"
         alt="green iguana"
-        height="140"
-        //image="/static/images/cards/contemplative-reptile.jpg"
-        image="https://cdn.chec.io/merchants/28663/assets/jmHrbyaTb3c6aRym%7Cbook1.jpg"
+        height="400"
+        image={product.media.source}
+        //image="https://cdn.chec.io/merchants/28663/assets/jmHrbyaTb3c6aRym%7Cbook1.jpg"
       />
-      <CardContent>
+      <CardContent         
+        sx={{
+          display: 'inline',
+        }}>
         <Typography gutterBottom variant="h5" component="div">
-          Lizard
+        {product.name}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Lizards are a widespread group of squamate reptiles, with over 6,000
-          species, ranging across all continents except Antarctica
+        <Typography variant="h6" color="text.secondary">
+          JPY <b>{product.price.formatted}</b>
         </Typography>
       </CardContent>
       <CardActions>
-        <Button size="small" component={Link} to="/product-view/3" aria-label="add to cart">Show Details</Button>
-        <Button size="small">Add Cart</Button>
-        
+        <Button size="small" component={Link} to={"/product-view/"+product.id} aria-label="add to cart">Show Details</Button>
+        <Button size="small" onClick={() => onAddToCart(product.id, 1)}>Add Cart</Button>
       </CardActions>
     </Card>
   );

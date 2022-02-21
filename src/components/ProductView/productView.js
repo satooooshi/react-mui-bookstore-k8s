@@ -8,6 +8,8 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from "react";
 import './styles.css'
 
+import axios from 'axios';
+
 
 let myproduct ={
   "id": "prod_0YnEoqGEOle7P6",
@@ -127,25 +129,30 @@ const ProductView = () => {
 
     const [product, setProduct] = useState({});
 
+    useEffect(() => {
+      const id = window.location.pathname.split("/");
+      console.log(id);
+      fetchProduct(id[2]);
+    }, []);
+
     const fetchProduct = async (id) => {
         //const response = await commerce.products.retrieve(id);
         //console.log({ response });
         //const { name, price, media, quantity, description } = response;
-        const { name, price, media, quantity, description } = myproduct;
-        setProduct({
-          name,
-          quantity,
-          description,
-          src: media.source,
-          price: price.formatted_with_symbol,
-        });
-      };
 
-      useEffect(() => {
-        const id = window.location.pathname.split("/");
-        console.log(id);
-        fetchProduct(id[2]);
-      }, []);
+        axios.get(`http://localhost:3001/api/products/`+id)
+        .then(res => {
+          console.log(res.data)
+          const { name, price, media, quantity, description } = res.data;
+          setProduct({
+            name,
+            quantity,
+            description,
+            src: media.source,
+            price: price.formatted_with_symbol,
+          });
+        })
+      };
 
     return (
         <Container className="product-view">
