@@ -14,11 +14,13 @@ import Expenses from "./Expenses";
 import Invoices from "./Invoices";
 import Products from "./components/Products/Products"
 import ProductView from "./components/ProductView/productView"
+import Cart from './components/Cart/Cart';
 
 
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { green } from '@mui/material/colors';
+import Grid from '@mui/material/Grid';
 
 const theme = createTheme({
   palette: {
@@ -57,14 +59,14 @@ export default function App() {
     <div>
   <ThemeProvider theme={theme}>
   <BrowserRouter>
-    <Navbar/>
-    <Routes>
+      <Navbar/>
+      <br/>
+      <Routes>
       <Route exact path="/" element={<Products products={products} />} />
-      <Route path="/cart" element={<Expenses />} />
+      <Route path="/cart" element={<Cart />} />
       <Route path="/checkout" element={<Invoices />} />
-      <Route path="/product-view/:id" element={<ProductView />} />
-      <Route path="/invoices" element={<Invoices />} />
-    </Routes>
+      <Route exact path="/product-view/:id" element={<ProductView />} />
+      </Routes>
   </BrowserRouter>
   </ThemeProvider>
     </div>
