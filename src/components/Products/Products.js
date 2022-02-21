@@ -4,6 +4,9 @@ import Grid from '@mui/material/Grid';
 
 import Product from "./Product/Product.js";
 
+import { Input, InputAdornment } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+
 
 export default function Products({ products, onAddToCart }) {
 
@@ -14,6 +17,22 @@ export default function Products({ products, onAddToCart }) {
       }, []);
 
     return (
+      <div>
+      <Grid container>
+      <Input
+        type="text"
+        placeholder="Search book keyword..."
+        onChange={(event) => {
+          setSearchTerm(event.target.value);
+        }}
+        startAdornment={
+          <InputAdornment position="start">
+            <SearchIcon />
+          </InputAdornment>
+        }
+      />
+    </Grid>
+    <br/>
       <Grid container justify="center" spacing={5} >
         {products
           .filter((product) => {
@@ -33,6 +52,7 @@ export default function Products({ products, onAddToCart }) {
             </Grid>
           ))}
       </Grid>
+      </div>
     );
   }
 

@@ -119,6 +119,7 @@ export default function App() {
       console.log(console.log(JSON.stringify(incomingOrder, null, 2)))
       setOrder(incomingOrder)
       refreshCartData();
+      handleEmptyCartData();
     } catch (error) {
       setErrorMessage(error.data.error.message);
     }

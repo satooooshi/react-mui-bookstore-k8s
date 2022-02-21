@@ -57,7 +57,7 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
   let Confirmation = () => (order.customer ? (
     <>
       <div>
-        <Typography variant="h5">Thank you for your purchase, {order.customer.firstname} {order.customer.lastname}!</Typography>
+        <Typography variant="h5">Thank you for your purchase {order.customer.firstname} {order.customer.lastname}!</Typography>
         <Divider sx={{margin: '20px 0',}} />
         <Typography variant="h5">Order Summary: {order.customer_reference}</Typography>
         <Typography variant="subtitle2">Ordered Items: </Typography>
@@ -101,13 +101,13 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
     ? <AddressForm checkoutToken={checkoutToken} nextStep={nextStep} setShippingData={setShippingData} test={test} />
     : <PaymentForm checkoutToken={checkoutToken} nextStep={nextStep} backStep={backStep} shippingData={shippingData} onCaptureCheckout={onCaptureCheckout}/>);
 
-/*
+
   const { token, setToken } = useToken(); // save in localStorage
   if(!token) {
     //eturn <Login setToken={setToken} /> 
     return <SignIn setToken={setToken} />
   }
-*/
+
 
   // step0 AddressForm, step1 PaymentForm, step3==steps.length Confirmation
   return (
