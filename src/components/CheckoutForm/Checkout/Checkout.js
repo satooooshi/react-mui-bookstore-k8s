@@ -8,8 +8,8 @@ import AddressForm from '../AddressForm';
 import PaymentForm from '../PaymentForm';
 import useStyles from './styles';
 
-import useToken from './useToken';
-import SignIn from './SignIn/Signin'
+import useToken from '../../SignIn/useToken';
+import SignIn from '../../SignIn/Signin'
 
 const steps = ['Shipping address', 'Payment details'];
 
@@ -104,8 +104,8 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
 
   const { token, setToken } = useToken(); // save in localStorage
   if(!token) {
-    //eturn <Login setToken={setToken} /> 
-    return <SignIn setToken={setToken} />
+    //return <SignIn setToken={setToken} /> 
+    navigate("/signin");
   }
 
 

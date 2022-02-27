@@ -63,3 +63,110 @@ AddressForm.jsx
 react native form
 https://ja.reactjs.org/docs/forms.html
 
+
+
+----------------------
+
+
+
+
+
+
+<h1 align="center">Online Book Store with React + Material UI </h1>
+
+
+# Online Book Store with React + Material UI with Docker-compose and kubernetes
+    Online Book Store with React + Material UI is an online React web application where the customer can purchase books online.
+    Through this book store the users can search for a book by its title and
+    later can add to the shopping cart and finally purchase using credit card transaction.
+
+
+# Used Technologies
+
+react  
+material ui  
+express
+axios    
+stripeJS  
+commerceJS  
+docker/-compose  
+nginx reverse proxy server
+
+## nginx reverse proxy server
+reactのリクエストはサーバからでなくブラウザから送られているのでホスト名が解決できない。ブラウザからaxios API requestを送れるようにするためにnginx reverse proxy serverもデプロイする
+
+Book-store-Reactjs/nginxrp/default.conf  
+```conf
+upstream reactbookfront {
+    server reactbookfront:3000;
+}
+
+upstream productsapi {
+    server productsapi:3001;
+}
+
+upstream tokenapi {
+    server tokenapi:3002;
+}
+
+server {
+    listen 80;
+
+    location / {
+        proxy_pass http://reactbookfront;
+    }
+
+    location /sockjs-node {
+        proxy_pass http://reactbookfront;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+    }
+    
+    location /api {
+        #rewrite /api/(.*) /$1 break;
+        proxy_pass http://productsapi;
+    }
+
+    location /login {
+        #rewrite /api/(.*) /$1 break;
+        proxy_pass http://tokenapi;
+    }
+}
+
+```
+
+# How to Run 
+## Running In Local  
+### Running whole App
+### `docker-compose up --build`  
+
+#### Running each micrservice  
+```sh
+# in project root directory
+REACT_APP_DEV_API_URL=http://localhost:3001 npm run start-client
+# in backend directory backend
+npm start
+# in auth-tutorial directory
+node server.js
+```
+Open [http://localhost:3050](http://localhost:3050) to view it in the browser.
+
+# build frontend
+```sh
+# in project root directory
+npm build
+```
+
+
+## Running with Kubernetes
+```sh
+kubectl apply -f reactproductstoken.yaml
+```
+
+
+
+
+
+
+

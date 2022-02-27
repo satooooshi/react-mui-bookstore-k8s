@@ -8,7 +8,6 @@ import {
 
 import axios from 'axios';
 
-
 import Navbar from './components/Navbar/Navbar';
 import Expenses from "./Expenses";
 import Invoices from "./Invoices";
@@ -16,11 +15,21 @@ import Products from "./components/Products/Products"
 import ProductView from "./components/ProductView/productView"
 import Cart from './components/Cart/Cart';
 import Checkout from './components/CheckoutForm/Checkout/Checkout';
+import Footer from './components/Footer/Footer';
 
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { green } from '@mui/material/colors';
 import Grid from '@mui/material/Grid';
+
+import MyInfo from './MyInfo'
+import SignIn from './components/SignIn/Signin';
+import useToken from './components/SignIn/useToken';
+
+
+import { Divider, } from '@mui/material'
+
+import {commerce} from './lib/commerce';
 
 const theme = createTheme({
   palette: {
@@ -34,30 +43,28 @@ const theme = createTheme({
 });
 
 
-
-
 const API_URL='http://localhost:3001'
 
-export default function App() {
+export default function App({children}) {
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState({});
   const [order, setOrder] = useState({});
   const [errorMessage, setErrorMessage] = useState('');
+  const { token, setToken } = useToken(); // save in localStorage
 
   useEffect(() => {
-    fetchProductsData();
+    fetchProducts();
     fetchCartData();
   }, []);
 
-  const fetchProductsData = () => {
-    //axios.get(API_URL+`/brotli`)
-    axios.get(`http://localhost:3001/api/products`)
-    .then(res => {
-      console.log(res.data)
-      setProducts([...res.data])
-    })
+
+  const fetchProducts = async () => {
+    const { data } = await commerce.products.list();
+    console.log(data);
+    //console.log(JSON.stringify(data, null, 2));
+    setProducts(data);
   };
 
   const fetchCartData = () => {
@@ -133,12 +140,16 @@ export default function App() {
       <br/>
       <br/>
       <br/>
+      <Divider sx={{margin:'10px'}}/>
       <Routes>
-      <Route exact path="/" element={<Products products={products}  onAddToCart={handleAddToCartData} handleUpdateCartQty/>} />
+      <Route exact path="/" element={<Invoices products={products}  onAddToCart={handleAddToCartData} handleUpdateCartQty/>} />
       <Route path="/cart" element={<Cart cart={cart} onUpdateCartQty={handleUpdateCartQtyData} onRemoveFromCart={handleRemoveFromCartData} onEmptyCart={handleEmptyCartData} />} />
       <Route path="/checkout" element={<Checkout  cart={cart} order={order} onCaptureCheckout={handleCaptureCheckoutData} error={errorMessage} />} />
-      <Route exact path="/product-view/:id" element={<ProductView />} />
+      <Route exact path="/product-view/:id" element={<ProductView  onAddToCart={handleAddToCartData} />} />
+      <Route exact path="/signin" element={<SignIn />} />
       </Routes>
+      <Divider sx={{margin:'10px'}}/>
+      <Footer />
   </BrowserRouter>
   </ThemeProvider>
     </div>

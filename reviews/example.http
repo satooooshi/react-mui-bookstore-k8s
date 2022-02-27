@@ -1,0 +1,59 @@
+ // https://qiita.com/kawasukeeee/items/7bc5d948e3029c8a3a23
+
+POST https://httpbin.org/post HTTP/1.1
+content-type: application/json
+
+{
+    "name": "ProtoOut Studio",
+    "category": "school",
+    "message": "ProtoOut Studioは日本初のプロトタイピング専門スクールです。"
+}
+
+###
+
+GET https://httpbin.org/
+
+
+###
+// commerceJs
+
+GET http://localhost:3003/api/reviews/prod_4OANwRbgawvYL8
+
+
+
+//https://commercejs.com/docs/api/#list-all-categories
+
+###
+curl -X GET \
+    -G "https://api.chec.io/v1/products?limit=25" \
+    -H "X-Authorization: pk_test_399804b273a47b61d2895cb718d628c00954d012207ae" | jq .
+
+curl -X GET \
+    -G "https://api.chec.io/v1/products?sortBy=price&sortDirection=asc" \
+    -H "X-Authorization: pk_test_399804b273a47b61d2895cb718d628c00954d012207ae" | jq .
+
+
+curl -X GET \
+    -G "https://api.chec.io/v1/carts" \
+    -H "X-Authorization: pk_test_399804b273a47b61d2895cb718d628c00954d012207ae"
+
+
+curl -X POST \
+    "https://api.chec.io/v1/carts/cart_2Jwr9yJAeN4VlP" \
+    -H "X-Authorization: pk_test_399804b273a47b61d2895cb718d628c00954d012207ae" \
+    -H "Content-Type: application/json" \
+    -d '{"id":"prod_R4OANwRqklvYL8","quantity":5}'
+
+
+curl -X GET \
+    -G "https://api.chec.io/v1/categories?depth=2" \
+    -H "X-Authorization: pk_test_399804b273a47b61d2895cb718d628c00954d012207ae"
+
+
+
+// create customer
+curl -X POST \
+    "https://api.chec.io/v1/customers" \
+    -H "X-Authorization: {token}" \
+    -H "Content-Type: application/json" \
+    -d '{"email":"leslie.lawless@example.com","phone":"+1 987 654 3210","firstname":"Leslie","lastname":"Lawless","external_id":"MY_CRM_USER_123"}'

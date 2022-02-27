@@ -15,10 +15,10 @@ const Cart = ({ cart, onUpdateCartQty, onRemoveFromCart, onEmptyCart }) => {
   const handleEmptyCart = () => onEmptyCart();
 
   const renderEmptyCart = () => (
-    <Typography variant="subtitle1">You have no items in your shopping cart,
+    <Typography variant="title">カートの中身は空です,
       <Link sx={{
     textDecoration: 'none',
-  }} href="/" > start adding some</Link>!
+  }} href="/" > 本を見に行く</Link>!
     </Typography>
   );
 
@@ -51,7 +51,7 @@ const Cart = ({ cart, onUpdateCartQty, onRemoveFromCart, onEmptyCart }) => {
               height: '40px',
               margin:'5px',
             }} 
-            variant="h5" >Subtotal: <b >JPY&nbsp;{cart.subtotal.raw}</b></Typography>
+            variant="h5" >合計: <b >JPY&nbsp;{cart.subtotal.raw}</b></Typography>
           <Button 
             sx={{
               minWidth: '150px',
@@ -94,7 +94,7 @@ const Cart = ({ cart, onUpdateCartQty, onRemoveFromCart, onEmptyCart }) => {
   return (
     <Container>
       <div  />
-      <Typography sx={{marginTop: '3%',}} variant="h5" gutterBottom><b>Your Shopping Cart</b></Typography>
+      <Typography sx={{marginTop: '3%',}} variant="h5" gutterBottom><b>カートの中身</b></Typography>
       <hr/>
       { !cart.line_items.length ? renderEmptyCart() : renderCart() }
     </Container>

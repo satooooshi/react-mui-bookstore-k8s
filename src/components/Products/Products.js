@@ -6,11 +6,24 @@ import Product from "./Product/Product.js";
 
 import { Input, InputAdornment } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import CategoryPool from '../../CategoryPool';
+import CategoryChips from '../../CategoryChips';
 
+let aa=[]
 
 export default function Products({ products, onAddToCart }) {
 
-    const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const [chipPoolData, setChipPoolData] = React.useState([
+    { key: 0, label: 'Action' },
+    { key: 1, label: 'Classics' },
+    { key: 2, label: 'Mystery' },
+    { key: 3, label: 'Fantasy' },
+    { key: 4, label: 'Sci-Fi' },
+  ]);
+
+  const [chipData, setChipData] = React.useState([]);
 
     useEffect(() => {
         console.log(products)
@@ -18,10 +31,12 @@ export default function Products({ products, onAddToCart }) {
 
     return (
       <div>
-      <Grid container>
+        色々な本を探す
+      <Grid container justifyContent="center" >
+        
       <Input
         type="text"
-        placeholder="Search book keyword..."
+        placeholder="本をキーワードで探す..."
         onChange={(event) => {
           setSearchTerm(event.target.value);
         }}
@@ -31,13 +46,21 @@ export default function Products({ products, onAddToCart }) {
           </InputAdornment>
         }
       />
+      
     </Grid>
+    
+    <CategoryPool chipPoolData={chipPoolData} setChipPoolData={setChipPoolData} chipData={chipData} setChipData={setChipData} />
+    <CategoryChips  chipPoolData={chipPoolData} setChipPoolData={setChipPoolData} chipData={chipData} setChipData={setChipData}  />
     <br/>
       <Grid container justify="center" spacing={5} >
         {products
           .filter((product) => {
             if (searchTerm === "") {
+             // aa.push(product.id)
+             // console.log(aa)
+             // console.log(JSON.stringify(aa, null, 2));
               return product;
+
             } else if (
               product.name
                 .toLowerCase()
@@ -46,6 +69,19 @@ export default function Products({ products, onAddToCart }) {
               return product;
             }
           })
+          .filter((product) => {
+            let okk=false
+            if (chipData.length === 0) {
+              return product;
+              } else {
+                chipData.forEach((chipVal, idx, array) => {
+                  if(product.categories.includes(chipVal.label)){
+                    okk=true
+                  }
+                })
+              }
+            if(okk) return product
+            })
           .map((product) => (
             <Grid item key={product.id} xs={12} sm={6} md={4} lg={3} id="pro">
               <Product product={product} onAddToCart={onAddToCart} />
