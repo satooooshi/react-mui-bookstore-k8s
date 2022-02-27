@@ -30,7 +30,7 @@ const ProductView = ({ onAddToCart }) => {
     useEffect(() => {
       const id = window.location.pathname.split("/");
       console.log(id);
-      fetchProduct(id[2]);
+      fetchProductData(id[2]);
       fetchReviewsData(id[2]);
     }, []);
 
@@ -47,6 +47,28 @@ const ProductView = ({ onAddToCart }) => {
       });
     };
 
+
+    const fetchProductData = async (id) => {
+        //const response = await commerce.products.retrieve(id);
+        //console.log({ response });
+        //const { name, price, media, quantity, description } = response;
+
+        axios.get(`http://localhost:3001/api/products/`+id)
+        .then(res => {
+          const { id, name, price, media, quantity, description } = res.data
+          const cate = res.data.categories
+          setProduct({
+            id, 
+            name,
+            quantity,
+            description,
+            src: media.source,
+            price: price.formatted_with_symbol,
+          });
+          setCategories(categories,[])
+          setCategories([...categories, cate ]);
+        })
+      };
 
       const fetchReviewsData = async (productId) => {
         axios.get(`http://localhost:3003/api/reviews/`+productId)
