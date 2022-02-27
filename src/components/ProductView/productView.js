@@ -34,15 +34,16 @@ const ProductView = ({ onAddToCart }) => {
       fetchReviewsData(id[2]);
     }, []);
 
-    const fetchProduct = async (id) => {
-      const response = await commerce.products.retrieve(id);
+    const fetchProduct = async (productId) => {
+      const response = await commerce.products.retrieve(productId);
       console.log({ response });
-      const { name, price, media, quantity, description } = response;
+      const { id, name, price, image, quantity, description } = response;
       setProduct({
+        id, 
         name,
         quantity,
         description,
-        src: media.source,
+        src: image.url,
         price: price.formatted_with_symbol,
       });
     };
@@ -68,7 +69,7 @@ const ProductView = ({ onAddToCart }) => {
               <Typography variant="h2"><b>{product.name}</b></Typography>
               <hr />
               <Typography variant="p" dangerouslySetInnerHTML={createMarkup(product.description)} />
-              <Typography variant="h3" color="secondary" >Price: <b> {product.price} </b> </Typography>
+              <Typography variant="h3" color="secondary" >価格: <b> {product.price} </b> </Typography>
               <CategoryTags categoriesa={categories} />
               <br/>
  <Grid container justifyContent="space-evenly">

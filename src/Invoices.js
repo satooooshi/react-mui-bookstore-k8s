@@ -28,26 +28,29 @@ export default function Invoices({ products, onAddToCart }) {
   <Grid item xs={4}>
     <Item sx={{height:150}}><MyInfo /></Item>
   </Grid>
+
+  {/* 
   <Grid item xs={8}>
     <Item elevation={0}>人気急上昇の本</Item>
     <Grid container spacing={2} >
     {products.slice(0,3).map((product) => (
-      <Grid item xs={4}>
+      <Grid item xs={4} key={product.id}>
         <Item elevation={0}><Recommendations product={product}/></Item>
       </Grid>
     ))}
     </Grid>
   </Grid>
   <Grid item xs={4}>
-    <Item　elevation={0}>人気のジャンル</Item>
+    <Item elevation={0}>人気のジャンル</Item>
     <Grid container spacing={2} >
     {products.slice(0,4).map((product) => (
-      <Grid item xs={6}>
+      <Grid item xs={6} key={product.id}>
         <Item elevation={0}><HotCategories product={product}/></Item>
       </Grid>
     ))}
     </Grid>
   </Grid>
+  */}
   <Grid item xs={12}>
     <Item><Products products={products}  onAddToCart={onAddToCart} handleUpdateCartQty /></Item>
   </Grid>

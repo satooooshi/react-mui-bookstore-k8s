@@ -16,6 +16,7 @@ import ProductView from "./components/ProductView/productView"
 import Cart from './components/Cart/Cart';
 import Checkout from './components/CheckoutForm/Checkout/Checkout';
 import Footer from './components/Footer/Footer';
+import MySnackbar from './MySnackbar'
 
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -27,7 +28,7 @@ import SignIn from './components/SignIn/Signin';
 import useToken from './components/SignIn/useToken';
 
 
-import { Divider, } from '@mui/material'
+import { Divider, Snackbar, } from '@mui/material'
 
 import {commerce} from './lib/commerce';
 
@@ -53,10 +54,12 @@ export default function App({children}) {
   const [order, setOrder] = useState({});
   const [errorMessage, setErrorMessage] = useState('');
   const { token, setToken } = useToken(); // save in localStorage
+  const [open, setOpen] = React.useState(false);
+  const [snackbarText, setSnackbarText] = React.useState('');
 
   useEffect(() => {
     fetchProducts();
-    fetchCartData();
+    fetchCart();
   }, []);
 
 
@@ -67,58 +70,45 @@ export default function App({children}) {
     setProducts(data);
   };
 
-  const fetchCartData = () => {
-    axios.get(API_URL+`/api/cart`)
-    .then(res => {
-      console.log('axios fetch cart')
-      console.log(res)
-      setCart(res.data);
-    })
+
+  const fetchCart = async () => {
+    const { data } = await commerce.cart.retrieve()
+    console.log(JSON.stringify(await commerce.cart.retrieve(), null, 2));
+    setCart(await commerce.cart.retrieve());
+    //setCart(data);
   };
 
-  const handleAddToCartData = (productId, quantity) => {
-
-    axios.get(API_URL+`/api/cart/add/`+productId)
-    .then(res => {
-      console.log('axios cart add')
-      console.log(res)
-      setCart(res.data)
-      fetchCartData()
-    })
+  const handleAddToCart = async (productId, quantity) => {
+    const item = await commerce.cart.add(productId, quantity);
+    console.log(JSON.stringify(await commerce.cart.add(productId, quantity), null, 2));
+    setCart(item.cart);
+    setOpen(true);
+    setSnackbarText('買い物かごへ追加しました')
   };
 
-  const handleUpdateCartQtyData = (lineItemId, quantity) => {
-    axios.get(API_URL+`/api/cart/update/`+lineItemId+'/'+quantity)
-    .then(res => {
-      console.log('axios cart update')
-      console.log(res)
-      setCart(res.data)
-      fetchCartData()
-    })
+  const handleUpdateCartQty = async (lineItemId, quantity) => {
+    const response = await commerce.cart.update(lineItemId, { quantity });
+
+    setCart(response.cart);
   };
 
-  const handleRemoveFromCartData = (lineItemId) => {
-    axios.get(API_URL+`/api/cart/remove/`+lineItemId)
-    .then(res => {
-      console.log('axios cart remove from cart')
-      console.log(res)
-      setCart(res.data);
-    })
+  const handleRemoveFromCart = async (lineItemId) => {
+    const response = await commerce.cart.remove(lineItemId);
+
+    setCart(response.cart);
   };
 
-  const handleEmptyCartData = () => {
-    axios.get(API_URL+`/api/cart/empty`)
-    .then(res => {
-      console.log('axios empty cart')
-      console.log(res)
-      setCart(res.data);
-    })
+  const handleEmptyCart = async () => {
+    const response = await commerce.cart.empty();
+
+    setCart(response.cart);
   };
 
-  const refreshCartData = () => {
-    fetchCartData()
-  };
+  const refreshCart = async () => {
+    const newCart = await commerce.cart.refresh();
 
+    setCart(newCart);
+  };
   const handleCaptureCheckoutData = (checkoutTokenId, newOrder) => {
     try {
       const incomingOrder=newOrder;
@@ -136,20 +126,21 @@ export default function App({children}) {
     <div>
   <ThemeProvider theme={theme}>
   <BrowserRouter>
-      <Navbar totalItems={cart.total_items} />
+      {/*<Navbar totalItems={cart.total_items} />*/}
       <br/>
       <br/>
       <br/>
+      <MySnackbar open={open} setOpen={setOpen} snackbarText={snackbarText} />
       <Divider sx={{margin:'10px'}}/>
       <Routes>
-      <Route exact path="/" element={<Invoices products={products}  onAddToCart={handleAddToCartData} handleUpdateCartQty/>} />
+      <Route exact path="/" element={<Invoices products={products}  onAddToCart={handleAddToCart} />} />
       <Route path="/cart" element={<Cart cart={cart} onUpdateCartQty={handleUpdateCartQtyData} onRemoveFromCart={handleRemoveFromCartData} onEmptyCart={handleEmptyCartData} />} />
-      <Route path="/checkout" element={<Checkout  cart={cart} order={order} onCaptureCheckout={handleCaptureCheckoutData} error={errorMessage} />} />
-      <Route exact path="/product-view/:id" element={<ProductView  onAddToCart={handleAddToCartData} />} />
+      <Route path="/checkout" element={<Checkout cart={cart} order={order} onCaptureCheckout={handleCaptureCheckoutData} error={errorMessage} />} />
+      <Route exact path="/product-view/:id" element={<ProductView  onAddToCart={handleAddToCart} />} />
       <Route exact path="/signin" element={<SignIn />} />
       </Routes>
       <Divider sx={{margin:'10px'}}/>
-      <Footer />
+      <Footer title={"Online Bookstore with React + MUI + k8s"} description={"S.AIKAWA"} />
   </BrowserRouter>
   </ThemeProvider>
     </div>

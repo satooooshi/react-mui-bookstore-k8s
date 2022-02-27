@@ -20,7 +20,7 @@ export default function MediaControlCard({product}) {
         <CardMedia
           component="img"
           height="70"
-          image={product.media.source}
+          image={product.image.url}
           alt="green iguana"
         />
         <CardContent>

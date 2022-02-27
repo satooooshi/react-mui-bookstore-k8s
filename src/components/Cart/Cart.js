@@ -22,11 +22,20 @@ const Cart = ({ cart, onUpdateCartQty, onRemoveFromCart, onEmptyCart }) => {
     </Typography>
   );
 
-  //if (!cart.line_items) return 'Loading';
-  if (cart===undefined) return (
+  
+  // cart under fetching
+  //if (cart?.line_items===undefined) return 'Loading...';
+
+  if (cart?.line_items===undefined) return 'Loading';
+
+  // empty cart
+  /*
+  if (cart?.line_items?.length===undefined) return (
     renderEmptyCart()
   )
+  */
 
+  // non-empty cart
   const renderCart = () => (
     <>
       <Grid container spacing={4}>
@@ -97,6 +106,7 @@ const Cart = ({ cart, onUpdateCartQty, onRemoveFromCart, onEmptyCart }) => {
       <Typography sx={{marginTop: '3%',}} variant="h5" gutterBottom><b>カートの中身</b></Typography>
       <hr/>
       { !cart.line_items.length ? renderEmptyCart() : renderCart() }
+      {/* cart?.line_items?.length===undefined ? renderEmptyCart() : renderCart() */}
     </Container>
   );
 };

@@ -16,7 +16,7 @@ const CartItem = ({ item, onUpdateCartQty, onRemoveFromCart }) => {
 
   return (
     <Card className="cart-item">
-      <CardMedia image={item.media.source} alt={item.name} sx={{height: 0,paddingTop: '100%', }} />
+      <CardMedia image={item.image.url} alt={item.name} sx={{height: 0,paddingTop: '100%', }} />
       <CardContent 
         sx={{
           display: 'flex',
@@ -24,7 +24,7 @@ const CartItem = ({ item, onUpdateCartQty, onRemoveFromCart }) => {
         }}
       >
         <Typography variant="h6">{item.name}</Typography>
-        <Typography variant="h6" color='secondary' >JPY&nbsp;{item.line_total}</Typography>
+        <Typography variant="h6" color='secondary' >JPY&nbsp;{item.line_total.formatted_with_code}</Typography>
       </CardContent>
       <CardActions sx={{justifyContent: 'space-between',}}>
         <Box display="flex" justifyContent="space-between">

@@ -8,7 +8,7 @@ import Link from '@mui/material/Link';
 function Copyright() {
   return (
     <Typography variant="body2" color="text.secondary" align="center">
-      {'Online Bookstore with React + MUI + k8s source code @ '}
+      {'source code @ '}
       <Link color="inherit" href="https://github.com/satooooshi/react-mui-bookstore-k8s">
         My github page
       </Link>{' '}

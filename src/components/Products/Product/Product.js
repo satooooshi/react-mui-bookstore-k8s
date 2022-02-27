@@ -16,7 +16,7 @@ export default function ImgMediaCard({product, onAddToCart}) {
         component="img"
         alt="im image"
         height="300"
-        image={product.media.source}
+        image={product.image.url}
         //image="https://cdn.chec.io/merchants/28663/assets/jmHrbyaTb3c6aRym%7Cbook1.jpg"
       />
       <CardContent         
