@@ -31,7 +31,7 @@ const ProductView = ({ onAddToCart }) => {
       const id = window.location.pathname.split("/");
       console.log(id);
       fetchProduct(id[2]);
-      fetchReviewsData(id[2]);
+      fetchReviews(id[2]);
     }, []);
 
     const fetchProduct = async (productId) => {
@@ -49,8 +49,8 @@ const ProductView = ({ onAddToCart }) => {
     };
 
 
-      const fetchReviewsData = async (productId) => {
-        axios.get(`http://localhost:3003/api/reviews/`+productId)
+      const fetchReviews = async (productId) => {
+        axios.get("http://localhost:3003/api/reviews/"+productId)
         .then(res => {
           setReviews(res.data);
         })
@@ -87,7 +87,7 @@ const ProductView = ({ onAddToCart }) => {
         
         <Grid item><br/><Typography variant="h5" color="black" >この本のレビュー</Typography><br/><Grid container spacing={1}>{reviews.map((rev) => {
         return (
-          <Grid item><Review review={rev} /></Grid>
+          <Grid item xs={12} sm={6} md={4} lg={3} ><Review review={rev} /></Grid>
         );
       })}</Grid></Grid>
      </Grid>

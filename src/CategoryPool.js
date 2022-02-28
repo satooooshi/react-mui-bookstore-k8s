@@ -26,6 +26,11 @@ export default function ChipsArray({chipPoolData, setChipPoolData, chipData, set
         listStyle: 'none',
         p: 0.5,
         m: 0,
+        '& .MuiChip-root': {
+          borderRadius: '1px',
+          color:'rgb(255 255 255 / 87%)',
+          backgroundColor: 'rgb(12 0 85 / 71%)',
+        }
       }}
       component="ul"
     >

@@ -25,7 +25,7 @@ export default function ChipsArray({categoriesa}) {
     >
       {categoriesa.map((data) => {
         return (
-          <ListItem>
+          <ListItem key={data}>
             <Chip
               label={data}
             />

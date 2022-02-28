@@ -23,7 +23,7 @@ export default function Invoices({ products, onAddToCart }) {
   <Grid container spacing={2} >
 
     <Grid item xs={8}>
-    <Item sx={{height:150}}><Button variant="outlined" component={Link} to="/cart" >買い物かごを見る</Button></Item>
+    <Item sx={{height:150}}><Button variant="outlined" component={Link} to="/cart" >買い物かごを見る</Button><Button variant="outlined" component={Link} to="/orders" >注文履歴を見る</Button></Item>
   </Grid>
   <Grid item xs={4}>
     <Item sx={{height:150}}><MyInfo /></Item>

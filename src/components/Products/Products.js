@@ -56,9 +56,6 @@ export default function Products({ products, onAddToCart }) {
         {products
           .filter((product) => {
             if (searchTerm === "") {
-             // aa.push(product.id)
-             // console.log(aa)
-             // console.log(JSON.stringify(aa, null, 2));
               return product;
 
             } else if (
@@ -75,9 +72,14 @@ export default function Products({ products, onAddToCart }) {
               return product;
               } else {
                 chipData.forEach((chipVal, idx, array) => {
-                  if(product.categories.includes(chipVal.label)){
-                    okk=true
+                  for(let i=0;i<product.categories.length;i++){
+                    if(product.categories[i].name===chipVal.label){
+                      okk=true;
+                    }
                   }
+                  //if(product.categories.includes(chipVal.label)){
+                  //  okk=true
+                  //}
                 })
               }
             if(okk) return product

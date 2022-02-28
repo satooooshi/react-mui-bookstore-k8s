@@ -8,7 +8,7 @@ import { commerce } from '../../lib/commerce';
 import { getSubdivisions, getShippingCountries, getShippingOptions } from './Checkout/data';
 import CheckoutForm from './CheckoutForm';
 
-const AddressForm = ({ checkoutToken, test }) => {
+const AddressForm = ({ checkoutToken, submitShippingData }) => {
   const [firstname, setFirstname] = useState([]);
   const [lastname, setLastname] = useState([]);
   const [email, setEmail] = useState([]);
@@ -109,7 +109,7 @@ useEffect(() => {
     <>
       <br/>
       <FormProvider {...methods}>
-        <form onSubmit={methods.handleSubmit((data) => test({ ...data, shippingCountry, shippingSubdivision, shippingOption, firstname, lastname, email, address1 }))}>
+        <form onSubmit={methods.handleSubmit((data) => submitShippingData({ ...data, shippingCountry, shippingSubdivision, shippingOption, firstname, lastname, email, address1 }))}>
           <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>
           <TextField

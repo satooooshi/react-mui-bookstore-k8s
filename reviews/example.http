@@ -54,6 +54,43 @@ curl -X GET \
 // create customer
 curl -X POST \
     "https://api.chec.io/v1/customers" \
-    -H "X-Authorization: {token}" \
+    -H "X-Authorization: sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba" \
     -H "Content-Type: application/json" \
     -d '{"email":"leslie.lawless@example.com","phone":"+1 987 654 3210","firstname":"Leslie","lastname":"Lawless","external_id":"MY_CRM_USER_123"}'
+
+
+###
+// commerce js customer
+// list customer
+curl -X GET \
+    -G "https://api.chec.io/v1/customers" \
+    -H "X-Authorization: sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba"
+
+
+// create customer
+curl -X POST \
+    "https://api.chec.io/v1/customers" \
+    -H "X-Authorization: sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba" \
+    -H "Content-Type: application/json" \
+    -d '{"email":"leslie.lawless@example.com","phone":"+1 987 654 3210","firstname":"Leslie","lastname":"Lawless","external_id":"MY_CRM_USER_123"}'
+
+curl -X POST \
+    "https://api.chec.io/v1/customers" \
+    -H "X-Authorization: sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba" \
+    -H "Content-Type: application/json" \
+    -d '{"email":"satoaikawa@qq.com","phone":"+1 987 654 3210","firstname":"Leslie","lastname":"Lawless","external_id":"MY_CRM_USER_123"}'
+
+
+// Issue and send login token, customer's email and base_url(jumping) needed
+curl -X POST \
+    "https://api.chec.io/v1/customers/email-token" \
+    -H "X-Authorization: sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba" \
+    -H "Content-Type: application/json" \
+    -d '{"email":"satoaikawa@qq.com","base_url":"http://localhost:3000"}'
+
+
+
+// list orders
+curl -X GET \
+    -G "https://api.chec.io/v1/customers/cstmr_0YnEoqP8Zmwe7P/orders" \
+    -H "X-Authorization: sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba" | jq .

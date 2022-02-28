@@ -10,18 +10,7 @@ let customers=[]
 let customer_ids=[]
 let reviews=[]
 let review_ids=[]
-let product_ids=[
-    "prod_0YnEoqGEOle7P6",
-    "prod_kd6Ll2eLj5V2mj",
-    "prod_4OANwRbgawvYL8",
-    "prod_VPvL5zzLG5AQkX",
-    "prod_Op1YoVm44wXLv9",
-    "prod_kpnNwAEpawmXB3",
-    "prod_Op1YoVm26wXLv9",
-    "prod_zkK6oLjB6lXn0Q",
-    "prod_RyWOwm08WlnEa2",
-    "prod_Kvg9l6QJd51bB7"
-]
+let product_ids=['prod_mOVKl4GxXK5prR', 'prod_ZM8X5nL6Orwpv4', 'prod_gvRjwOVDjel4mN', 'prod_N7GKwbB0gxw3EX', 'prod_ZRjywMpyjZl7Y8', 'prod_aZWNoyv9jj580J', 'prod_BkyN5YABbx50b6']
 
 for(let i=0;i<100;i++){
     let item={}
