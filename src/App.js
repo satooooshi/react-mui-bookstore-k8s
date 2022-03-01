@@ -26,6 +26,7 @@ import Grid from '@mui/material/Grid'
 
 import MyInfo from './MyInfo'
 import SignIn from './components/SignIn/Signin'
+import SignUp from './components/SignIn/SignUp'
 import useToken from './components/SignIn/useToken'
 
 
@@ -63,6 +64,7 @@ export default function App({children}) {
     fetchCart()
   }, [])
 
+  
 
   const fetchProducts = async () => {
     const { data } = await commerce.products.list()
@@ -149,6 +151,8 @@ export default function App({children}) {
       <Route path="/checkout" element={<Checkout cart={cart} order={order} onCaptureCheckout={handleCaptureCheckout} error={errorMessage} />} />
       <Route exact path="/product-view/:id" element={<ProductView  onAddToCart={handleAddToCart} />} />
       <Route exact path="/signin" element={<SignIn />} />
+      <Route exact path="/signup" element={<SignUp />} />
+      <Route path="/registration-success/:token" element={<Expenses />} />
       <Route exact path="/orders" element={<OrderTable />} />
       <Route exact path="/order-detail/:id" element={<OrderTable />} />
       </Routes>

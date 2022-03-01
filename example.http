@@ -64,7 +64,7 @@ curl -X POST \
 // list customer
 curl -X GET \
     -G "https://api.chec.io/v1/customers" \
-    -H "X-Authorization: sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba"
+    -H "X-Authorization: sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba" | jq .
 
 
 // create customer
@@ -81,16 +81,60 @@ curl -X POST \
     -d '{"email":"satoaikawa@qq.com","phone":"+1 987 654 3210","firstname":"Leslie","lastname":"Lawless","external_id":"MY_CRM_USER_123"}'
 
 
-// Issue and send login token, customer's email and base_url(jumping) needed
-curl -X POST \
-    "https://api.chec.io/v1/customers/email-token" \
-    -H "X-Authorization: sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba" \
-    -H "Content-Type: application/json" \
-    -d '{"email":"satoaikawa@qq.com","base_url":"http://localhost:3000"}'
-
 
 
 // list orders
 curl -X GET \
     -G "https://api.chec.io/v1/customers/cstmr_0YnEoqP8Zmwe7P/orders" \
     -H "X-Authorization: sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba" | jq .
+
+
+// get jwt for cutomer
+curl -X POST \
+    "https://api.chec.io/v1/customers/cstmr_zkK6oL9PaR5Xn0/issue-token" \
+    -H "X-Authorization: sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba"
+
+
+###
+
+// Issue and send login token W/O customerId
+// Issue and send login token, customer's email and base_url(jumping) needed
+curl -X POST \
+    "https://api.chec.io/v1/customers/email-token" \
+    -H "X-Authorization: sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba" \
+    -H "Content-Type: application/json" \
+    -d '{"email":"satoaikawa@qq.com","base_url":"http://localhost:3000/registration-success"}'
+
+// response
+// http://localhost:3000/registration-success/fa4258c2-b34c-480e-b6cb-2df2a7718f6a
+// Exchange login token for JWT W/O customerId
+curl -X POST \
+    "https://api.chec.io/v1/customers/exchange-token" \
+    -H "X-Authorization: sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba" \
+    -H "Content-Type: application/json" \
+    -d '{"token":"fa4258c2-b34c-480e-b6cb-2df2a7718f6a"}'
+
+// response contains customerID and jwt
+//{
+//    "customer_id": "cstmr_zkK6oL9PaR5Xn0",
+//    "jwt": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FwaS5jaGVjLmlvIiwiaWF0IjoxNjQ2MDUzNzg5LjcyMDI0LCJuYmYiOjE2NDYwNTM3ODkuNzIwMjY5LCJleHAiOjE2NDYxNDAxODkuNzIwMjc3LCJjaWQiOiJjc3Rtcl96a0s2b0w5UGFSNVhuMCJ9.Cn_ldDq9zCbEQN8ZkO6c0cKTu5vI493il5ymXnRV-Vg"
+//}
+
+
+// list order for customer
+curl -X GET \
+    -G "https://api.chec.io/v1/customers/cstmr_0YnEoqP8Zmwe7P/orders" \
+    -H "X-Authorization: sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba"
+
+
+
+curl -X GET \
+    -G "https://api.chec.io/v1/customers/cstmr_zkK6oL9PaR5Xn0/orders" \
+    -H "X-Authorization: sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba"
+
+
+curl -X POST \
+    "https://api.chec.io/v1/customers" \
+    -H "X-Authorization: sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba" \
+    -H "Content-Type: application/json" \
+    -d '{"email":"satoaikawa@qq.com","phone":"+1 987 654 3210","firstname":"Leslie","lastname":"Lawless","external_id":"MY_CRM_USER_123"}'

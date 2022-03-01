@@ -8,29 +8,24 @@ import axios from 'axios'
 
 
 const columns = [
-  { field: 'id', headerName: 'ID', width: 200 },
-  { field: 'created', headerName: 'date', width: 200 },
-  { field: 'orderValue', headerName: 'total', width: 200,
+  { field: 'id', headerName: 'ID', width: 300 },
+  { field: 'created', headerName: 'date', width: 300,
+    valueGetter: (params) =>{
+      let myDate = new Date(params.row.created*1000)
+      console.log(myDate.getFullYear() + '-' +('0' + (myDate.getMonth()+1)).slice(-2)+ '-' +  ('0' + myDate.getDate()).slice(-2) + ' '+myDate.getHours()+ ':'+('0' + (myDate.getMinutes())).slice(-2)+ ':'+myDate.getSeconds())
+      return myDate.getFullYear() + '-' +('0' + (myDate.getMonth()+1)).slice(-2)+ '-' +  ('0' + myDate.getDate()).slice(-2) + ' '+myDate.getHours()+ ':'+('0' + (myDate.getMinutes())).slice(-2)+ ':'+myDate.getSeconds()
+        
+    },
+  },
+  { field: 'orderValue', headerName: 'total', width: 300,
     valueGetter: (params) =>{return params.row.order_value.formatted_with_code},
   },
   {
     field: "操作",
-    width: 100,
+    width: 300,
     align: "center",
     renderCell: () => <Button component={Link} variant="outlined" type="button" to="/order-detail/ord_NXELwjdbpr53A4" onClick={()=>{console.log("order table button clieckd")}}>詳細を見る</Button>
   },
-];
-
-const rowsa = [
-  { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
-  { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
-  { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
-  { id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
-  { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-  { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-  { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-  { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-  { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
 ];
 
 
