@@ -2,57 +2,8 @@ import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Checkbox, Link, Grid, Typography, Container, FormControlLabel, CssBaseline, ThemeProvider, TextField,  } from '@mui/material';
 
-import useToken from './useToken'
-import {commerce} from '../../lib/commerce'
-
-let API_URL=process.env.REACT_APP_DEV_TOKEN_API_URL
-
-async function loginUser(credentials) {
-    //return fetch(API_URL+'/login', {
-    return fetch('http://localhost:3002/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(credentials)
-    })
-      .then(data => data.json())
-}
-
-export default function SignIn() {
-
-  const navigate = useNavigate();
-  const { token, setToken } = useToken(); // save in localStorage
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    for (var value of data.values()) {
-        console.log(value);
-      }
-    // eslint-disable-next-line no-console
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-    const token = await loginUser({
-        email: data.get('email'),
-        password: data.get('password'),
-      });
-    setToken(token);
-    console.log(token)
-    //navigate(-1)
-
-  };
-
-  const loginChec =  () => {
-   commerce.customer.login('satoaikawa@qq.com', 'http://localhost:3000/registration-success').then((loginToken) => console.log(loginToken));
-  }
-
+export default function SignIn({onSignIn}) {
   return (
-    
-    <ThemeProvider >
-      {/*<ThemeProvider theme={theme}>*/}
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
@@ -63,8 +14,7 @@ export default function SignIn() {
             alignItems: 'center',
           }}
         >
-          {/*<Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>*/}
-          <Box component="form" onSubmit={loginChec} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={onSignIn} noValidate sx={{ mt: 1 }}>
           <Typography component="h1" variant="h5">
           サインインする
           </Typography>
@@ -115,6 +65,5 @@ export default function SignIn() {
           </Box>
         </Box>
       </Container>
-    </ThemeProvider>
   );
 }

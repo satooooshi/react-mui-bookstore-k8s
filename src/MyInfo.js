@@ -4,8 +4,8 @@ import { Card, Box, Avatar, Stack, Typography, IconButton, Divider, Chip, Switch
 import { LocationOn, Edit } from '@mui/icons-material';
 import { grey } from '@mui/material/colors';
 
-import useToken from './components/SignIn/useToken';
-import SignIn from './components/SignIn/Signin'
+import useToken from './components/SignInUp/useToken';
+import SignIn from './components/SignInUp/SignIn'
 
 import {commerce} from './lib/commerce'
 
@@ -21,10 +21,8 @@ export default function MyInfo({loading, customer}) {
   <Box sx={{ p: 2, display: 'flex' }}>
     <Avatar variant="rounded" src="./assets/logo.png" />
     <Stack spacing={0.5}>
-      <Typography fontWeight={700}>{customer.email}</Typography>
-      <Typography variant="body2" color="text.secondary">
-        {'Hello, '+customer.firstname+" "+customer.lastname+' !'}
-      </Typography>
+      <Typography fontWeight={700}>{'Hello, '+customer.firstname+" "+customer.lastname+' !'}</Typography>
+      <Typography variant="body2" color="text.secondary">{customer.email}</Typography>
     </Stack>
   </Box>
   <Divider />

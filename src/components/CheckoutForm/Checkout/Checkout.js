@@ -6,10 +6,7 @@ import { List, ListItem, ListItemText } from '@mui/material';
 import { commerce } from '../../../lib/commerce';
 import AddressForm from '../AddressForm';
 import PaymentForm from '../PaymentForm';
-import useStyles from './styles';
 
-import useToken from '../../SignIn/useToken';
-import SignIn from '../../SignIn/Signin'
 
 const steps = ['Shipping address', 'Payment details'];
 
@@ -56,12 +53,13 @@ const Checkout = ({ cart, onCaptureCheckout, order, error, customer }) => {
       <div>
         <Typography variant="h5">Thank you for your purchase {order.customer.firstname} {order.customer.lastname}!</Typography>
         <Divider sx={{margin: '20px 0',}} />
-        <Typography variant="h5">Order Summary: {order.id}</Typography>
+        <Typography variant="h5">Order Summary</Typography>
+        <Typography variant="subtitle2">Order ID: {order.id}</Typography>
         <Typography variant="subtitle2">Ordered Items: </Typography>
         <List disablePadding>
       {order.order.line_items.map((product) => (
-        <ListItem style={{ padding: '10px 0' }} key={product.name}>
-          <ListItemText primary={product.name} secondary={`Quantity: ${product.quantity}`} />
+        <ListItem style={{ padding: '10px 0' }} key={product.id}>
+          <ListItemText primary={product.product_name} secondary={`Quantity: ${product.quantity}`} />
           <Typography variant="body2">{product.line_total.formatted_with_symbol}</Typography>
         </ListItem>
       ))}

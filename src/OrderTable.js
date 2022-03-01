@@ -29,9 +29,10 @@ const columns = [
 ];
 
 
+// rows should be array
 export default function DataTable({rows}) {
 
-  if(!rows) return 'Loading';
+  if(!rows) return 'Currently No Order History found.';
 
   return (
     <div style={{ height: 400, width: '100%' }}>

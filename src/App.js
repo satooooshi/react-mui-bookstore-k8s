@@ -25,9 +25,9 @@ import { green } from '@mui/material/colors'
 import Grid from '@mui/material/Grid'
 
 import MyInfo from './MyInfo'
-import SignIn from './components/SignIn/Signin'
-import SignUp from './components/SignIn/SignUp'
-import useToken from './components/SignIn/useToken'
+import SignIn from './components/SignInUp/SignIn'
+import SignUp from './components/SignInUp/SignUp'
+import useToken from './components/SignInUp/useToken'
 
 
 import { Divider, Snackbar, } from '@mui/material'
@@ -72,7 +72,7 @@ export default function App({children}) {
     fetchProducts()
     fetchCart()
     fetchCustomerInfo()
-    fetchOrders()
+    fetchOrderHistories()
   }, []) // [] is for useEffectをマウント時に1回だけ実行する方法
 
   const fetchCustomerInfo = async () => {
@@ -89,20 +89,106 @@ export default function App({children}) {
     const data = new FormData(event.currentTarget);
     for (var value of data.values()) {
         console.log(value);
-      }
+    }
+    console.log(data.get('email'))
+    console.log(data.get('password'))
+    let email=data.get('email')
+    let password=data.get('password')
+
+    // const navigate = useNavigate();
       
     // send registration email
-    const result = await commerce.customer.login('satoaikawa@qq.com', 'http://localhost:3000/registration-success');
+    const result = await commerce.customer.login(email, 'http://localhost:3000/registration-success');
     console.log(result)
     fetchCustomerInfo()
+
+    // add chec customer to self-proviced auth API to allow authentication with email and password
+    //addCustomerToAuthApi(customer.id, customer.email);
   }
 
-  const fetchOrders = async () => {
+  const signInChec =  async (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    for (var value of data.values()) {
+        console.log(value);
+    }
+    console.log(data.get('email'))
+    console.log(data.get('password'))
+    let email=data.get('email')
+    let password=data.get('password')
+
+    // Issue and return login token
+    // Requires secret key
+    // This API works the same way as "Issue and send login token", 
+    // but requires a secret API key, and will return the issued token rather than emailing it to the customer. 
+    /*
+    const url = new URL(
+      "https://api.chec.io/v1/customers/issue-token"
+    );
+  
+    let headers = {
+      "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    };
+  
+    let body = {
+      "email": "satoaikawa@qq.com",
+      "base_url": "http://localhost:3000/"
+    }
+  
+    fetch(url, {
+      method: "POST",
+      headers: headers,
+      body: body
+    })
+    .then(response => response.json())
+    .then(json => console.log(json));
+*/
+      /*
+    const gai = axios.create({
+      headers : {
+        "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
+        "Access-Control-Allow-Origin": "*"
+      }
+    })
+
+    let payload = { email: 'mytestemail@qq.com', base_url: 'omnis' }
+    const res1 = await gai.post("http://api.chec.io/v1/customers/issue-token", payload)
+    console.log(res1)
+*/
+    // Issue JWT for customer
+    // Requires secret key
+    // As a merchant, you may issue a JSON web token for a customer directly using your secret Chec API key. This may be a desirable option 
+    // if you are integrating your own customer authentication, and simply need a token to authorize API requests as your customer with.
+    /*
+    const res2  = await gai.post("http://api.chec.io/v1/customers/"+res1.customer_id+"/issue-token")
+    console.log(res2)
+    */
+    const url = new URL(
+      "https://api.chec.io/v1/customers/cstmr_zkK6oL9PaR5Xn0/issue-token"
+  );
+  
+  let headers = {
+      "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+  };
+  
+  fetch(url, {
+      method: "POST",
+      headers: headers,
+  })
+      .then(response => response.json())
+      .then(json => console.log(json));
+  }
+
+  const fetchOrderHistories = async () => {
     const data = await commerce.customer.getOrders();
     console.log(data)
-    setRows(data)
+    setRows(data.data)
+    
   };
-
 
 
   const fetchProducts = async () => {
@@ -169,6 +255,8 @@ export default function App({children}) {
       setOrder(incomingOrder)
 
       refreshCart()
+      fetchOrderHistories()
+      
     } catch (error) {
       setErrorMessage(error.data.error.message)
     }
@@ -189,8 +277,8 @@ export default function App({children}) {
       <Route path="/cart" element={<Cart cart={cart} onUpdateCartQty={handleUpdateCartQty} onRemoveFromCart={handleRemoveFromCart} onEmptyCart={handleEmptyCart} />} />
       <Route path="/checkout" element={<Checkout cart={cart} order={order} customer={customer} onCaptureCheckout={handleCaptureCheckout} error={errorMessage} />} />
       <Route exact path="/product-view/:id" element={<ProductView  onAddToCart={handleAddToCart} />} />
-      <Route exact path="/signin" element={<SignIn />} />
-      <Route exact path="/signup" element={<SignUp handleSignUp={signUpChec} />} />
+      <Route exact path="/signin" element={<SignIn onSignIn={signInChec} />} />
+      <Route exact path="/signup" element={<SignUp onSignUp={signUpChec} />} />
       <Route path="/registration-success/:token" element={<Expenses />} />
       <Route exact path="/orders" element={<OrderTable rows={rows} />} />
       <Route exact path="/order-detail/:id" element={<OrderTable />} />
