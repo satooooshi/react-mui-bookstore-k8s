@@ -17,7 +17,7 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 //<Item sx={{height:150}}><Button variant="outlined" component={Link} to="/cart" >買い物かごを見る</Button></Item>
-export default function Invoices({ products, onAddToCart }) {
+export default function Invoices({ products, onAddToCart, loading, customer }) {
     return (
 
   <Grid container spacing={2} >
@@ -26,7 +26,7 @@ export default function Invoices({ products, onAddToCart }) {
     <Item sx={{height:150}}><Button variant="outlined" component={Link} to="/cart" >買い物かごを見る</Button><Button variant="outlined" component={Link} to="/orders" >注文履歴を見る</Button></Item>
   </Grid>
   <Grid item xs={4}>
-    <Item sx={{height:150}}><MyInfo /></Item>
+    <Item sx={{height:150}}><MyInfo loading={loading} customer={customer} /></Item>
   </Grid>
 
   {/* 

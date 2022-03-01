@@ -7,7 +7,7 @@ import Review from './Review';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
-const PaymentForm = ({ checkoutToken, nextStep, backStep, shippingDataa, onCaptureCheckout }) => {
+const PaymentForm = ({ checkoutToken, nextStep, backStep, shippingData, onCaptureCheckout }) => {
 
   // <form onSubmit={(e) => handleSubmit(e, elements, stripe)}>
   // <Button type="submit"
@@ -28,14 +28,9 @@ const PaymentForm = ({ checkoutToken, nextStep, backStep, shippingDataa, onCaptu
     if (error) {
       console.log('[error]', error);
     } else {
-      const shippingData={
-        firstname: 'John',
-        lastname: 'Doe',
-        email: 'john.doe@example.com',
-
-      }
       // required fields
       // https://commercejs.com/docs/api/?javascript--cjs#capture-order
+      console.log(shippingData)
       const orderData = {
         line_items: checkoutToken.live.line_items,
         customer: { firstname: shippingData.firstName, lastname: shippingData.lastName, email: shippingData.email },

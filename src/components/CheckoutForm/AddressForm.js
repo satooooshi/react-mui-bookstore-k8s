@@ -8,11 +8,11 @@ import { commerce } from '../../lib/commerce';
 import { getSubdivisions, getShippingCountries, getShippingOptions } from './Checkout/data';
 import CheckoutForm from './CheckoutForm';
 
-const AddressForm = ({ checkoutToken, submitShippingData }) => {
-  const [firstname, setFirstname] = useState([]);
-  const [lastname, setLastname] = useState([]);
-  const [email, setEmail] = useState([]);
-  const [address1, setAddress1] = useState([]);
+const AddressForm = ({ checkoutToken, submitShippingData, customer }) => {
+  const [firstname, setFirstname] = useState(customer.firstname);
+  const [lastname, setLastname] = useState(customer.lastname);
+  const [email, setEmail] = useState(customer.email);
+  const [address1, setAddress1] = useState('');
   const [shippingCountries, setShippingCountries] = useState([]);
   const [shippingCountry, setShippingCountry] = useState('');
   const [shippingSubdivisions, setShippingSubdivisions] = useState([]);
@@ -109,7 +109,7 @@ useEffect(() => {
     <>
       <br/>
       <FormProvider {...methods}>
-        <form onSubmit={methods.handleSubmit((data) => submitShippingData({ ...data, shippingCountry, shippingSubdivision, shippingOption, firstname, lastname, email, address1 }))}>
+        <form onSubmit={methods.handleSubmit((data) => submitShippingData({ ...data, firstname, lastname, email, shippingCountry, shippingSubdivision, shippingOption, firstname, lastname, email, address1 }))}>
           <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>
           <TextField
@@ -117,37 +117,42 @@ useEffect(() => {
             label="first name"
             id="margin-normal"
             name="firstname"
-            //defaultValue={formInput.email}
+            defaultValue={customer.firstname}
             onChange={(e) => setFirstname(e.target.value)}
             helperText="Enter your first name"
           />
           </Grid>
           <Grid item xs={12} sm={6}>
           <TextField
+            required
             fullWidth
             label="last name"
             id="margin-normal"
             name="lastname"
+            defaultValue={customer.lastname}
             onChange={(e) => setLastname(e.target.value)}
             helperText="Enter your last name"
           />
           </Grid>
           <Grid item xs={12} sm={6}>
           <TextField
+            required
             fullWidth
             label="email address"
             id="margin-normal"
             name="email"
+            defaultValue={customer.email}
             onChange={(e) => setEmail(e.target.value)}
             helperText="Enter your email"
           />
           </Grid>
           <Grid item xs={12} sm={6}>
           <TextField
+            required
             fullWidth
             label="address 1"
             id="margin-normal"
-            name="firstname"
+            name="address1"
             //defaultValue={formInput.email}
             onChange={(e) => setAddress1(e.target.value)}
             helperText="Enter your address"

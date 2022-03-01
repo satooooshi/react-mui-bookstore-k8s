@@ -13,7 +13,7 @@ import SignIn from '../../SignIn/Signin'
 
 const steps = ['Shipping address', 'Payment details'];
 
-const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
+const Checkout = ({ cart, onCaptureCheckout, order, error, customer }) => {
   const [checkoutToken, setCheckoutToken] = useState(null);
   const [activeStep, setActiveStep] = useState(0);
   const [shippingData, setShippingData] = useState({});
@@ -95,17 +95,8 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
   }
 
   const Form = () => (activeStep === 0
-    ? <AddressForm checkoutToken={checkoutToken} nextStep={nextStep} setShippingData={setShippingData} submitShippingData={submitShippingData} />
+    ? <AddressForm customer={customer} checkoutToken={checkoutToken} nextStep={nextStep} setShippingData={setShippingData} submitShippingData={submitShippingData} />
     : <PaymentForm checkoutToken={checkoutToken} nextStep={nextStep} backStep={backStep} shippingData={shippingData} onCaptureCheckout={onCaptureCheckout}/>);
-
-
-    /*
-  const { token, setToken } = useToken(); // save in localStorage
-  if(!token) {
-    //return <SignIn setToken={setToken} /> 
-    navigate("/signin");
-  }
-  */
 
   if(!checkoutToken) return 'Loading';
 
@@ -113,7 +104,6 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
 
   // step0 AddressForm, step1 PaymentForm, step3==steps.length Confirmation
   return (
-
     <>
       <CssBaseline />
       <div  />

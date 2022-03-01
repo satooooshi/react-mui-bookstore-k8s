@@ -59,12 +59,51 @@ export default function App({children}) {
   const [open, setOpen] = React.useState(false)
   const [snackbarText, setSnackbarText] = React.useState('')
 
+
+  // myinfo 
+  const [ loading, setLoading ] = useState(false)
+  const [ customer, setCustomer ] = useState({})
+
+  // orders
+  const [rows, setRows] = useState({})
+
+
   useEffect(() => {
     fetchProducts()
     fetchCart()
-  }, [])
+    fetchCustomerInfo()
+    fetchOrders()
+  }, []) // [] is for useEffectをマウント時に1回だけ実行する方法
 
-  
+  const fetchCustomerInfo = async () => {
+    const ok = await commerce.customer.isLoggedIn()
+    console.log(ok)
+    const  data  = await commerce.customer.about()
+    console.log(data)
+    setLoading(ok)
+    setCustomer(data)
+  }
+
+  const signUpChec =  async (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    for (var value of data.values()) {
+        console.log(value);
+      }
+      
+    // send registration email
+    const result = await commerce.customer.login('satoaikawa@qq.com', 'http://localhost:3000/registration-success');
+    console.log(result)
+    fetchCustomerInfo()
+  }
+
+  const fetchOrders = async () => {
+    const data = await commerce.customer.getOrders();
+    console.log(data)
+    setRows(data)
+  };
+
+
 
   const fetchProducts = async () => {
     const { data } = await commerce.products.list()
@@ -146,14 +185,14 @@ export default function App({children}) {
       <MySnackbar open={open} setOpen={setOpen} snackbarText={snackbarText} />
       <Divider sx={{margin:'10px'}}/>
       <Routes>
-      <Route exact path="/" element={<Invoices products={products}  onAddToCart={handleAddToCart} />} />
+      <Route exact path="/" element={<Invoices products={products} loading={loading} customer={customer} onAddToCart={handleAddToCart} />} />
       <Route path="/cart" element={<Cart cart={cart} onUpdateCartQty={handleUpdateCartQty} onRemoveFromCart={handleRemoveFromCart} onEmptyCart={handleEmptyCart} />} />
-      <Route path="/checkout" element={<Checkout cart={cart} order={order} onCaptureCheckout={handleCaptureCheckout} error={errorMessage} />} />
+      <Route path="/checkout" element={<Checkout cart={cart} order={order} customer={customer} onCaptureCheckout={handleCaptureCheckout} error={errorMessage} />} />
       <Route exact path="/product-view/:id" element={<ProductView  onAddToCart={handleAddToCart} />} />
       <Route exact path="/signin" element={<SignIn />} />
-      <Route exact path="/signup" element={<SignUp />} />
+      <Route exact path="/signup" element={<SignUp handleSignUp={signUpChec} />} />
       <Route path="/registration-success/:token" element={<Expenses />} />
-      <Route exact path="/orders" element={<OrderTable />} />
+      <Route exact path="/orders" element={<OrderTable rows={rows} />} />
       <Route exact path="/order-detail/:id" element={<OrderTable />} />
       </Routes>
       <Divider sx={{margin:'10px'}}/>
