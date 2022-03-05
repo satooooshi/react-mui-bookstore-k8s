@@ -3,10 +3,14 @@ import {
   BrowserRouter,
   Routes,
   Route,
-  Link
+  Link,
+  useNavigate,
+  Navigate
 } from "react-router-dom"
 
 import axios from 'axios'
+import { styled } from '@mui/material/styles';
+import { useLocation, NavLink } from "react-router-dom";
 
 import Navbar from './components/Navbar/Navbar'
 import Expenses from "./Expenses"
@@ -19,6 +23,14 @@ import Footer from './components/Footer/Footer'
 import MySnackbar from './MySnackbar'
 import OrderTable from './OrderTable'
 
+import Pro from './Product'
+import ProDet from './ProdcutDetail'
+import Home from './Home'
+import CartItem from './CartItem'
+import SignUpa from './SignUp'
+import SignIna from './SignIn'
+import SearchBar from './SearchBar'
+import SearchedItems from './SearchedItems'
 
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { green } from '@mui/material/colors'
@@ -30,7 +42,7 @@ import SignUp from './components/SignInUp/SignUp'
 import useToken from './components/SignInUp/useToken'
 
 
-import { Divider, Snackbar, } from '@mui/material'
+import { Divider, Snackbar, Paper } from '@mui/material'
 
 import {commerce} from './lib/commerce'
 
@@ -43,14 +55,36 @@ const theme = createTheme({
       main: green[500],
     },
   },
+  typography: {
+    fontFamily: [
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(','),
+  },
+  
 })
 
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+}));
 
 const API_URL='http://localhost:3001'
 
-export default function App({children}) {
 
-  const [mobileOpen, setMobileOpen] = React.useState(false)
+export default function App() {
+
   const [products, setProducts] = useState([])
   const [cart, setCart] = useState({})
   const [order, setOrder] = useState({})
@@ -58,6 +92,8 @@ export default function App({children}) {
   const { token, setToken } = useToken() // save in localStorage
   const [open, setOpen] = React.useState(false)
   const [snackbarText, setSnackbarText] = React.useState('')
+  const [searched, setSearched] = React.useState(true)
+  const [searchTerm, setSearchTerm] = React.useState('')
 
 
   // myinfo 
@@ -66,7 +102,6 @@ export default function App({children}) {
 
   // orders
   const [rows, setRows] = useState({})
-
 
   useEffect(() => {
     fetchProducts()
@@ -92,18 +127,79 @@ export default function App({children}) {
     }
     console.log(data.get('email'))
     console.log(data.get('password'))
+    let firstname=data.get('firstname')
+    let lastname=data.get('lastname')
     let email=data.get('email')
     let password=data.get('password')
 
     // const navigate = useNavigate();
-      
-    // send registration email
-    const result = await commerce.customer.login(email, 'http://localhost:3000/registration-success');
-    console.log(result)
-    fetchCustomerInfo()
+
+    // add customer to Chec
+    //ChecCreate customer
+    //Requires secret key
+    //Create a new customer record for the current merchant. 
+    const url1 = new URL(
+      "https://api.chec.io/v1/customers"
+  );
+  let headers1 = {
+      "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+  };
+  let body1 = {
+    "email": email,
+    "firstname": firstname,
+    "lastname": lastname
+  }
+  let customerDataa={}
+   await fetch(url1, {
+      method: "POST",
+      headers: headers1,
+      body:  JSON.stringify(body1)
+  })
+      .then(response => response.json())
+      .then(json => {
+        console.log(json);
+        customerDataa=json;
+      });
+      console.log(customerDataa)
+
 
     // add chec customer to self-proviced auth API to allow authentication with email and password
-    //addCustomerToAuthApi(customer.id, customer.email);
+    //addCustomerToAuthApi({customer_id:resultChec.id, email:resultChec.email, firstname, lastname, password})
+  const url2 = new URL(
+    "http://localhost:3002/api/register/"+customerDataa.id+"/"+customerDataa.email+"/"+firstname+"/"+lastname+"/"+password
+);
+
+let headers2 = {
+  "Content-Type": "application/json  charset=UTF-8",
+  "Accept": "application/json",
+};
+
+let body2 = {
+    "customer_id": customerDataa.id,
+    "email": customerDataa.email,
+    "firstname": customerDataa.firstname,
+    "lastname": customerDataa.lastname,
+    "password": customerDataa.password
+}
+console.log(body2)
+
+let result={}
+await fetch(url2, {
+    method: "GET",
+    headers: headers2
+})
+    .then(response => response.json())
+    .then(json => {
+      console.log(json);
+      result=json;
+    });
+    console.log(result)
+
+    // send registration email
+    await commerce.customer.login(email, 'http://localhost:3000/registration-success');
+    fetchCustomerInfo()
   }
 
   const signInChec =  async (event) => {
@@ -112,10 +208,33 @@ export default function App({children}) {
     for (var value of data.values()) {
         console.log(value);
     }
-    console.log(data.get('email'))
-    console.log(data.get('password'))
     let email=data.get('email')
     let password=data.get('password')
+
+    // login with self-provided auth API
+    //let result=fetchCustomerFromAuthApi({email, password})
+    const url1 = new URL(
+      "http://localhost:3002/api/login/"+email+"/"+password
+  );
+  let headers1 = {
+      "Content-Type": "application/json  charset=UTF-8",
+      "Accept": "application/json",
+  };
+  let body1 = {
+      "email": email,
+      "password": password
+  }
+  let result={}
+  await fetch(url1, {
+      method: "GET",
+      headers: headers1
+  })
+      .then(response => response.json())
+      .then(json => {
+        console.log(json);
+        result=json;
+      });
+      console.log(result)
 
     // Issue and return login token
     // Requires secret key
@@ -165,22 +284,44 @@ export default function App({children}) {
     const res2  = await gai.post("http://api.chec.io/v1/customers/"+res1.customer_id+"/issue-token")
     console.log(res2)
     */
-    const url = new URL(
-      "https://api.chec.io/v1/customers/cstmr_zkK6oL9PaR5Xn0/issue-token"
+    const url2 = new URL(
+      //"https://api.chec.io/v1/customers/cstmr_zkK6oL9PaR5Xn0/issue-token"
+      "https://api.chec.io/v1/customers/"+result.customer_id+"/issue-token"
   );
   
-  let headers = {
+  let headers2 = {
       "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
       "Accept": "application/json",
       "Content-Type": "application/json",
   };
   
-  fetch(url, {
+  let result3={}
+  await fetch(url2, {
       method: "POST",
-      headers: headers,
+      headers: headers2,
   })
       .then(response => response.json())
-      .then(json => console.log(json));
+      .then(json => {console.log(json);result3=json});
+
+  // jwt got now
+  //
+  const url3 = new URL(
+    "https://api.chec.io/v1/customers/"+result3.customer_id+"/orders"
+);
+
+let headers3 = {
+    "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
+    "Accept": "application/json",
+    "Content-Type": "application/json",
+};
+
+await fetch(url3, {
+    method: "GET",
+    headers: headers3,
+})
+    .then(response => response.json())
+    .then(json => console.log(json));
+
   }
 
   const fetchOrderHistories = async () => {
@@ -189,7 +330,6 @@ export default function App({children}) {
     setRows(data.data)
     
   };
-
 
   const fetchProducts = async () => {
     const { data } = await commerce.products.list()
@@ -256,17 +396,27 @@ export default function App({children}) {
 
       refreshCart()
       fetchOrderHistories()
-      
+
     } catch (error) {
       setErrorMessage(error.data.error.message)
     }
   }
+
+
 
   return (
     <div >
   <ThemeProvider theme={theme}>
   <BrowserRouter>
       <Navbar totalItems={cart.total_items} />
+      {/*if current path is /a or /searched-items ||window.location.pathname.includes('/collections') 
+      {(window.location.pathname==='/a')?
+      <Grid container spacing={2} justify="center" alignItems="center" >
+        <Grid item xs={12} md={12}>
+          <Item elevation={0}><SearchBar setSearchTerm={setSearchTerm} /></Item>
+        </Grid>
+      </Grid>:<br/>}
+      */}
       <br/>
       <br/>
       <br/>
@@ -282,9 +432,17 @@ export default function App({children}) {
       <Route path="/registration-success/:token" element={<Expenses />} />
       <Route exact path="/orders" element={<OrderTable rows={rows} />} />
       <Route exact path="/order-detail/:id" element={<OrderTable />} />
+
+      <Route exact path="/a" element={<Home products={products} loading={loading} customer={customer} onAddToCart={handleAddToCart} />} />
+      <Route exact path="/collections/:tag" element={<SearchedItems products={products} loading={loading} customer={customer} onAddToCart={handleAddToCart} />} />
+
+      <Route exact path="/signina" element={<SignIna />} />
+      <Route exact path="/signupa" element={<SignUpa />} />
+      <Route exact path="/carta" element={<CartItem />} />
+      <Route exact path="/product-viewa/:id" element={<ProDet  onAddToCart={handleAddToCart} />} />
+
       </Routes>
-      <Divider sx={{margin:'10px'}}/>
-      <Footer title={"Online Bookstore with React + MUI + k8s"} description={"S.AIKAWA"} />
+      <Footer title={"Online Fashion Store with React + MUI + k8s"} description={"S.AIKAWA"} />
   </BrowserRouter>
   </ThemeProvider>
     </div>

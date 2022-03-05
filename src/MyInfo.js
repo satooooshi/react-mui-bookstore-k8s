@@ -13,7 +13,7 @@ export default function MyInfo({loading, customer}) {
 
 
   if(!loading){
-    return <Button variant="outlined" href="/signin" >サインインする</Button>
+    return <div><Button variant="outlined" href="/signin" >サインインする</Button><Button variant="outlined" href="/signup" >サインアップする</Button></div>
   }
 
   return (

@@ -138,3 +138,27 @@ curl -X POST \
     -H "X-Authorization: sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba" \
     -H "Content-Type: application/json" \
     -d '{"email":"satoaikawa@qq.com","phone":"+1 987 654 3210","firstname":"Leslie","lastname":"Lawless","external_id":"MY_CRM_USER_123"}'
+
+
+
+###
+
+POST http://localhost:3002/api/login HTTP/1.1
+content-type: application/json
+
+{
+    "email": "satoaikawa@qq.com",
+    "password": "test"
+}
+
+###
+POST http://localhost:3002/api/register HTTP/1.1
+content-type: application/json
+
+{
+    "customer_id": "customer_test_2_abc",
+    "firstname": "satoshi",
+    "lastname": "aikawa",
+    "email": "sasa@qq.com",
+    "password": "test"
+}
