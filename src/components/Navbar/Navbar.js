@@ -43,7 +43,7 @@ const Search = styled('div')(({ theme }) => ({
 
 
 
-export default function PrimarySearchAppBar({totalItems}) {
+export default function PrimarySearchAppBar({totalItems, customer}) {
 
   const navigate = useNavigate();
 
@@ -65,10 +65,11 @@ export default function PrimarySearchAppBar({totalItems}) {
             noWrap
             component="div"
             sx={{ display: { xs: 'none', sm: 'block' , textDecoration:'none', color:'white'} }}
-            component={Link} to="/a"
+            component={Link} to="/"
           >
             Online Fashion Store with React + MUI + k8s
           </Typography>
+
 
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
@@ -92,7 +93,7 @@ export default function PrimarySearchAppBar({totalItems}) {
             >
               <FavoriteIcon />
             </IconButton>
-            <IconButton href="/cart" size="large" aria-label="show 4 new mails" color="inherit" component={Link} to='/cart'>
+            <IconButton href="/carta" size="large" aria-label="show 4 new mails" color="inherit" >
               <Badge badgeContent={totalItems} color="error">
                 <ShoppingCartCheckoutIcon />
               </Badge>

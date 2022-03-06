@@ -13,6 +13,8 @@ import SearchBar from './SearchBar'
 
 import Product from './Product';
 
+import useToken from './useToken'
+
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
   ...theme.typography.body2,
@@ -20,14 +22,22 @@ const Item = styled(Paper)(({ theme }) => ({
   textAlign: 'center',
   color: theme.palette.text.secondary,
 }));
-///Users/satoshiaikawa/react-mui-bookstore-k8s/src/assets/jacket.gif
-export default function FullWidthGrid() {
+
+
+export default function Home({customer, products, categories}) {
+
+  const { token, setToken } = useToken() // save in localStorage
+
   return (
     <Paper elevation={0} sx={{
       flexGrow: 1,
       backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
     }} >
       <Grid container spacing={1} justify="center" alignItems="center" >
+
+      <Grid item xs={6} md={12}>
+          <Item elevation={0} >{token}</Item>
+        </Grid>
 
         <Grid item xs={6} md={12}>
           <Item elevation={0} >韓国ファッションメンズ通販サイト</Item>
@@ -44,9 +54,9 @@ export default function FullWidthGrid() {
         <Grid item xs={6} md={12}>
           <Item elevation={0} >
             <Grid container justify="center" spacing={5} >
-            {[1,2,3,4,5,6,7,8].map((product,idx) => (
+            {products.map((product,idx) => (
               <Grid item key={idx} lg={3} >
-                <Product />
+                <Product product={product} />
               </Grid>
             ))}
             </Grid>
@@ -67,14 +77,14 @@ export default function FullWidthGrid() {
         
         <Grid item xs={6} md={12}>
         <Grid container justifyContent="center" spacing={2}>
-        {[1,2,3].map((product,idx) => (
+        {categories.map((elem,idx) => (
         <Grid item md={3}>
         <Item>
         <Grid item md={12} >
           <Item elevation={0} sx={{ height:180,}}><img width="180" height="180"  src="https://cdn.shop-list.com/res/up/shoplist/shp/__thum370__/ueno-shokai/435121302-60/1.jpg" alt="海の写真" title="空と海"/></Item>
         </Grid>
         <Grid item md={12} >
-          <Item elevation={0} sx={{height:30,}}>アウター</Item>
+          <Item elevation={0} sx={{height:30,}}>{elem}</Item>
         </Grid>
         </Item>
         </Grid>

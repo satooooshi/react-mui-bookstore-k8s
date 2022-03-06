@@ -25,17 +25,17 @@ export default function FullWidthGrid({product}) {
     }} >
       <Grid container spacing={2} >
         <Grid item md={12} >
-          <Item elevation={0} sx={{ height:180,}}><img width="180" height="180"  src={product.image.url} alt="海の写真" title="空と海"/></Item>
+          <Item elevation={0} sx={{ height:180,}}><img width="180" height="180"  src="https://cdn.shop-list.com/res/up/shoplist/shp/__thum370__/ueno-shokai/435121302-60/1.jpg" alt="海の写真" title="空と海"/></Item>
         </Grid>
         <Grid item md={12} >
-          <Item elevation={0} sx={{height:30,}}>{product.name}</Item>
+          <Item elevation={0} sx={{height:30,}}>コリアンレトロダウンOt1163</Item>
         </Grid>
         <Grid item xs={6} md={4}>
           <Item elevation={0} sx={{backgroundColor:'white', height:30,}}><Rating name="size-small" defaultValue={Math.floor(Math.random() * (5 - 1 + 1) + 1)} size="small" readOnly />
         ({Math.floor(Math.random() * (200 - 10 + 10) + 10)})</Item>
         </Grid>
         <Grid item xs={6} md={8}>
-          <Item elevation={0} sx={{ height:30,}}>{product.price.formatted_with_code}</Item>
+          <Item elevation={0} sx={{ height:30,}}>¥9,660</Item>
         </Grid>
         <Grid item md={6}>
           <Item elevation={0} sx={{ height:30,}}><Button onClick={handleClick} variant="outlined">ウィッシュリストへ</Button></Item>

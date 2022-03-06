@@ -12,7 +12,7 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 ///Users/satoshiaikawa/react-mui-bookstore-k8s/src/assets/jacket.gif
-export default function FullWidthGrid({onSignUp}) {
+export default function FullWidthGrid({createCustomer}) {
   return (        
     <Paper
     elevation={0}
@@ -26,7 +26,7 @@ export default function FullWidthGrid({onSignUp}) {
     }}
   >
 
-      <Grid component="form" noValidate onSubmit={handleSubmit} container spacing={2} justifyContent='center' alignItems='center' >
+      <Grid component="form" noValidate onSubmit={createCustomer} container spacing={2} justifyContent='center' alignItems='center' >
 
         <Grid item xs={6} md={12}>
           <Item elevation={0} ><Typography variant="h5">新規登録フォーム</Typography><br/>以下の情報を入力してください:</Item>

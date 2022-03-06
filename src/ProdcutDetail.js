@@ -3,10 +3,10 @@ import { styled } from '@mui/material/styles';
 import {Box,Button, Paper, Grid, Rating, Tabs, Tab, Typography, ButtonGroup } from '@mui/material';
 import BadgeUnstyled from '@mui/base/BadgeUnstyled';
 import PropTypes from 'prop-types';
+
 import Product from './Product';
 
-
-let imagesa=['https://cdn.shopify.com/s/files/1/0408/1015/2103/products/2022-03-0413.23.04_200x.png?v=1646367914','https://cdn.shop-list.com/res/up/shoplist/shp/__thum370__/ueno-shokai/435121302-60/1.jpg', 'https://cdn.shopify.com/s/files/1/0408/1015/2103/products/2021-12-03_21h34_59_700x.png?v=1638754802'];
+import {commerce} from './lib/commerce';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -15,27 +15,107 @@ const Item = styled(Paper)(({ theme }) => ({
   textAlign: 'center',
   color: theme.palette.text.secondary,
 }));
-///Users/satoshiaikawa/react-mui-bookstore-k8s/src/assets/jacket.gif
-export default function FullWidthGrid() {
+
+export default function ProdcutDetail({products, onAddToCart}) {
 
   const [images, setImages] = React.useState([])
   const [selectedImage, setSelectedImage] = React.useState('')
 
+  const [sizes, setSizes] = useState([])
+  const [colors, setColors] = useState([])
+  const [variants, setVariants] = useState([])
+  const [opdict, setOpdict] = useState({})
+  const [vdict, setVdict] = useState({})
+
+  const [selectedSize, setSelectedSize] = useState('') 
+  const [selectedColor, setSelectedColor] = useState('') 
+
+  const [product, setProduct] = useState({})
+
+  const [selected, setSelected] = React.useState('')
+
+
+
   useEffect(() => {
-    setImages(imagesa)
-    setSelectedImage(imagesa[0])
+    const id = window.location.pathname.split("/")
+    //console.log(id)
+    fetchProduct(id[2])
+    //fetchProductVariants(id[2])
   }, []) // [] is for useEffectをマウント時に1回だけ実行する方法
 
 
-  const handleClick = (event, newValue) => {
+  const handleChange = (event) => {
+    console.log(event.target.value)
+    setSelected(event.target.value)
+  };
+
+  
+  const fetchProduct = async (productId) => {
+    await commerce.products.retrieve(productId)
+    .then(product => {
+      console.log(product)
+      setProduct(product)
+      setImages(product.assets.map(asset=>asset.url))
+      setSelectedImage(product.assets.map(asset=>asset.url)[0])
+      setSizes(product.variant_groups.filter(variant=>variant.name==="size")[0].options.map(option=>{return {id:option.id, name:option.name} }))
+      setColors(product.variant_groups.filter(variant=>variant.name==="color")[0].options.map(option=>{return {id:option.id, name:option.name} }))
+      // vid, vgrp name --> dict
+      let vdicta={};
+      console.log(product.variant_groups.map(group=>{vdicta[group.id]=group.name; return {id:group.id, name:group.name, options:group.options}}))
+      console.log(vdicta)
+      // opid, opname, concat size and color --> dict
+      let opdicta={}
+      console.log(product.variant_groups.filter(variant=>variant.name==="size")[0].options.map(option=>{opdicta[option.id]=option.name; return {id:option.id, name:option.name} }))
+      console.log(product.variant_groups.filter(variant=>variant.name==="color")[0].options.map(option=>{opdicta[option.id]=option.name; return {id:option.id, name:option.name} }))
+      console.log(opdicta)
+      setVdict(vdicta)
+      setOpdict(opdicta)
+
+      const url = new URL(
+        "https://api.chec.io/v1/products/"+productId+"/variants"
+      );
+    
+      let headers = {
+        "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      };
+    
+      fetch(url, {
+        method: "GET",
+        headers: headers,
+      })
+        .then(response => response.json())
+        .then(json => {
+          //console.log(json.data)
+          let newVariants=json.data.map(variant=>{
+            /*
+            let vid=variant.id
+            let keyList = Object.keys(variant.options)
+            console.log(vdict[keyList[0]])
+            console.log(vdict[keyList[1]])
+            console.log(opdict[variant.options[keyList[0]]])
+            console.log(opdict[variant.options[keyList[1]]])
+            */
+           return {variant_id:variant.id, options:variant.options}
+          })
+          setVariants(newVariants)
+          console.log(newVariants)
+        });
+
+    });
+  }
+
+  const handleClick = (event) => {
     console.log(event.target.src)
     setSelectedImage(event.target.src)
-    //const newImages=images.filter(image=>image!==event.target.src)
-    //setImages(newImages)
+
   };  
+  
+  if(product.variant_groups===undefined)return "loading"
 
   return (
-    <Paper elevation={1} sx={{
+    <Paper elevation={0} sx={{
       flexGrow: 1,
       backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
     }} >
@@ -54,30 +134,41 @@ export default function FullWidthGrid() {
 
         <Grid container spacing={2} direction="column" alignItems="center" >
         <Grid item md={12} >
-          <Item elevation={0} sx={{height:30,}}>シックスリムスラックスOt1729</Item>
+          <Item elevation={0} sx={{height:30,}}>{product.name}</Item>
         </Grid>
         <Grid item xs={6} md={8}>
           <StyledBadge badgeContent={'10％OFF'}>
-            <Item elevation={0} ><s>¥9,660</s></Item>
+            <Item elevation={0} ><s>{product?.price?.formatted_with_code}</s></Item>
           </StyledBadge>
         </Grid>
         <Grid item xs={6} md={8}>
-          <Item elevation={0} >¥9,660</Item>
+          <Item elevation={0} >{product?.price?.formatted_with_code}</Item>
         </Grid>
+        <Grid item xs={6} md={8}>
+          <Item elevation={0} sx={{ height:30,}}>在庫のあるサイズとカラーの組み合わせ:</Item>
+        </Grid>
+        <Grid item xs={6} md={8}>
+          <Item elevation={0} sx={{ height:30,}}><VariantButtonGroup variants={variants} vdict={vdict} opdict={opdict} selected={selected} handleChange={handleChange} /></Item>
+        </Grid>
+        {/* 
         <Grid item xs={6} md={8}>
           <Item elevation={0} sx={{ height:30,}}>カラー:</Item>
         </Grid>
         <Grid item xs={6} md={8}>
-          <Item elevation={0} sx={{ height:30,}}><VariantButtonGroup elems={['Black', 'Gray', 'Brown']}/></Item>
+          <Item elevation={0} sx={{ height:30,}}><VariantButtonGroup elems={product.variant_groups.filter(variant=>variant.name==="color")[0].options.map(option=>option.name)}/></Item>
         </Grid>
         <Grid item xs={6} md={8}>
           <Item elevation={0} sx={{ height:30,}}>サイズ:</Item>
         </Grid>
         <Grid item xs={6} md={8}>
-          <Item elevation={0} sx={{ height:30,}}><VariantButtonGroup elems={['XS', 'S', 'M', 'L']}/></Item>
+          <Item elevation={0} sx={{ height:30,}}><VariantButtonGroup elems={product.variant_groups.filter(variant=>variant.name==="size")[0].options.map(option=>option.name)}/></Item>
         </Grid>
+        */}
 
         </Grid>
+
+        <br/>
+
 
         <Grid container spacing={2} >
         <Grid item xs={6} md={12}>
@@ -88,18 +179,18 @@ export default function FullWidthGrid() {
           </Item>
         </Grid>
         <Grid item md={12}>
-          <Item elevation={0} sx={{ height:30,}}><Button variant="contained">カートに入れる</Button></Item>
+          <Item elevation={0} sx={{ height:30,}}><Button disabled={false} onClick={ () => onAddToCart(product.id, 1, selected)} variant="contained">カートに入れる</Button></Item>
         </Grid>
         <Grid item md={12}>
-          <Item elevation={0} sx={{ }}><BasicTabs /></Item>
+          <Item elevation={0} sx={{ }}><BasicTabs product={product} /></Item>
         </Grid>
         <Grid item md={12}>
           <Item elevation={0} sx={{ height:30,}}>おすすめ関連アイテム</Item>
         </Grid>
         <Grid container justify="center" spacing={5} >
-        {[1,2,3,4,5,6,7,8].map((product,idx) => (
+        {products.map((product,idx) => (
             <Grid item key={idx} lg={3} >
-            <Product />
+            <Product product={product} />
             </Grid>
           ))}
         </Grid>
@@ -169,7 +260,12 @@ function a11yProps(index) {
   };
 }
 
-function BasicTabs() {
+
+const createMarkup = (text) => {
+  return { __html: text };
+};
+
+function BasicTabs({product}) {
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
@@ -185,15 +281,9 @@ function BasicTabs() {
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
-        商品詳細
-        <Typography>
-  {text.split("\n").map((i, key) => {
-    return <p key={key}>{i}</p>;
-  })}
-</Typography>
+        <Typography variant="p" dangerouslySetInnerHTML={createMarkup(product.description)} />
       </TabPanel>
       <TabPanel value={value} index={1}>
-      お取り扱い
       <Typography>
 ※サイトの下部にあるAttentionをよく読んでからのご購入をお願いいたします。
 注意事項
@@ -210,13 +300,11 @@ function BasicTabs() {
 
 
 
-function VariantButtonGroup({elems}) {
-  const [selected, setSelected] = React.useState('')
+function VariantButtonGroup({variants, vdict, opdict, handleChange, selected}) {
 
-  const handleChange = (event) => {
-    setSelected(event.target.value)
-  };
   
+  if(variants===undefined)return 'loading'
+
   return (
     <Box
       sx={{
@@ -229,8 +317,9 @@ function VariantButtonGroup({elems}) {
       }}
     >
       <ButtonGroup variant="text" aria-label="text button group">
-                {elems.map((elem, idx) => (
-                  <Button value={elem} sx={{backgroundColor:selected===elem?'black':'white', color:selected===elem?'white':'black'}} onClick={handleChange} >{elem}</Button>
+                {variants.map((elem, idx) => (
+                  //<Button value={elem.variant_id} sx={{backgroundColor:selected===elem.variant_id?'black':'white', color:selected===elem?'white':'black'}} onClick={handleChange} >{elem.variant_id}</Button>
+                  <Button value={elem.variant_id} sx={{backgroundColor:selected===elem.variant_id?'black':'white', color:selected===elem.variant_id?'white':'black'}} onClick={handleChange} >{opdict[elem.options[Object.keys(elem.options)[0]]]+", "+opdict[elem.options[Object.keys(elem.options)[1]]]}</Button>
                 ))}
       </ButtonGroup>
     </Box>

@@ -31,6 +31,8 @@ import SignUpa from './SignUp'
 import SignIna from './SignIn'
 import SearchBar from './SearchBar'
 import SearchedItems from './SearchedItems'
+import Checkouta from './Checkout'
+import MyAccount from './MyAccount'
 
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { green } from '@mui/material/colors'
@@ -39,7 +41,7 @@ import Grid from '@mui/material/Grid'
 import MyInfo from './MyInfo'
 import SignIn from './components/SignInUp/SignIn'
 import SignUp from './components/SignInUp/SignUp'
-import useToken from './components/SignInUp/useToken'
+import useToken from './useToken'
 
 
 import { Divider, Snackbar, Paper } from '@mui/material'
@@ -89,283 +91,224 @@ export default function App() {
   const [cart, setCart] = useState({})
   const [order, setOrder] = useState({})
   const [errorMessage, setErrorMessage] = useState('')
-  const { token, setToken } = useToken() // save in localStorage
+
   const [open, setOpen] = React.useState(false)
   const [snackbarText, setSnackbarText] = React.useState('')
   const [searched, setSearched] = React.useState(true)
   const [searchTerm, setSearchTerm] = React.useState('')
+  const [categories, setCategories] = React.useState([])
+
 
 
   // myinfo 
   const [ loading, setLoading ] = useState(false)
   const [ customer, setCustomer ] = useState({})
+  const { setToken } = useToken() // save in localStorage
 
   // orders
-  const [rows, setRows] = useState({})
+  const [orders, setOrders] = useState({})
 
   useEffect(() => {
-    fetchProducts()
+    fetchCategories()
+    fetchProductsWithParams()
     fetchCart()
-    fetchCustomerInfo()
     fetchOrderHistories()
   }, []) // [] is for useEffectをマウント時に1回だけ実行する方法
 
+
   const fetchCustomerInfo = async () => {
+    /*
     const ok = await commerce.customer.isLoggedIn()
     console.log(ok)
     const  data  = await commerce.customer.about()
     console.log(data)
     setLoading(ok)
-    setCustomer(data)
+    setCustomer(data)*/
+    let customerId=localStorage.getItem('token')
+    console.log(customerId)
+    customerId=customerId.substring(1,customerId.length-1)
+    console.log(customerId)
+    const url = new URL(
+      "https://api.chec.io/v1/customers/"+customerId
+  );
+  
+  let headers = {
+      "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+  };
+  
+  fetch(url, {
+      method: "GET",
+      headers: headers,
+  })
+      .then(response => response.json())
+      .then(json => {console.log(json);setCustomer(json);});
   }
 
-  const signUpChec =  async (event) => {
+
+  const createCustomer =  async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     for (var value of data.values()) {
         console.log(value);
     }
-    console.log(data.get('email'))
-    console.log(data.get('password'))
     let firstname=data.get('firstname')
     let lastname=data.get('lastname')
     let email=data.get('email')
     let password=data.get('password')
 
-    // const navigate = useNavigate();
-
-    // add customer to Chec
-    //ChecCreate customer
-    //Requires secret key
-    //Create a new customer record for the current merchant. 
-    const url1 = new URL(
+    const url = new URL(
       "https://api.chec.io/v1/customers"
   );
-  let headers1 = {
+  
+  let headers = {
       "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
       "Content-Type": "application/json",
       "Accept": "application/json",
   };
-  let body1 = {
-    "email": email,
-    "firstname": firstname,
-    "lastname": lastname
-  }
-  let customerDataa={}
-   await fetch(url1, {
-      method: "POST",
-      headers: headers1,
-      body:  JSON.stringify(body1)
-  })
-      .then(response => response.json())
-      .then(json => {
-        console.log(json);
-        customerDataa=json;
-      });
-      console.log(customerDataa)
-
-
-    // add chec customer to self-proviced auth API to allow authentication with email and password
-    //addCustomerToAuthApi({customer_id:resultChec.id, email:resultChec.email, firstname, lastname, password})
-  const url2 = new URL(
-    "http://localhost:3002/api/register/"+customerDataa.id+"/"+customerDataa.email+"/"+firstname+"/"+lastname+"/"+password
-);
-
-let headers2 = {
-  "Content-Type": "application/json  charset=UTF-8",
-  "Accept": "application/json",
-};
-
-let body2 = {
-    "customer_id": customerDataa.id,
-    "email": customerDataa.email,
-    "firstname": customerDataa.firstname,
-    "lastname": customerDataa.lastname,
-    "password": customerDataa.password
-}
-console.log(body2)
-
-let result={}
-await fetch(url2, {
-    method: "GET",
-    headers: headers2
-})
-    .then(response => response.json())
-    .then(json => {
-      console.log(json);
-      result=json;
-    });
-    console.log(result)
-
-    // send registration email
-    await commerce.customer.login(email, 'http://localhost:3000/registration-success');
-    fetchCustomerInfo()
-  }
-
-  const signInChec =  async (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    for (var value of data.values()) {
-        console.log(value);
-    }
-    let email=data.get('email')
-    let password=data.get('password')
-
-    // login with self-provided auth API
-    //let result=fetchCustomerFromAuthApi({email, password})
-    const url1 = new URL(
-      "http://localhost:3002/api/login/"+email+"/"+password
-  );
-  let headers1 = {
-      "Content-Type": "application/json  charset=UTF-8",
-      "Accept": "application/json",
-  };
-  let body1 = {
+  
+  let body = {
       "email": email,
-      "password": password
+      "firstname": firstname,
+      "lastname": lastname,
+      "external_id": "MY_CRM_USER_123"
   }
-  let result={}
-  await fetch(url1, {
-      method: "GET",
-      headers: headers1
-  })
-      .then(response => response.json())
-      .then(json => {
-        console.log(json);
-        result=json;
-      });
-      console.log(result)
-
-    // Issue and return login token
-    // Requires secret key
-    // This API works the same way as "Issue and send login token", 
-    // but requires a secret API key, and will return the issued token rather than emailing it to the customer. 
-    /*
-    const url = new URL(
-      "https://api.chec.io/v1/customers/issue-token"
-    );
   
-    let headers = {
-      "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
-      "Content-Type": "application/json",
-      "Accept": "application/json",
-    };
-  
-    let body = {
-      "email": "satoaikawa@qq.com",
-      "base_url": "http://localhost:3000/"
-    }
-  
-    fetch(url, {
+  let customerId=undefined
+  fetch(url, {
       method: "POST",
       headers: headers,
-      body: body
-    })
-    .then(response => response.json())
-    .then(json => console.log(json));
-*/
-      /*
-    const gai = axios.create({
-      headers : {
-        "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
-        "Access-Control-Allow-Origin": "*"
-      }
-    })
-
-    let payload = { email: 'mytestemail@qq.com', base_url: 'omnis' }
-    const res1 = await gai.post("http://api.chec.io/v1/customers/issue-token", payload)
-    console.log(res1)
-*/
-    // Issue JWT for customer
-    // Requires secret key
-    // As a merchant, you may issue a JSON web token for a customer directly using your secret Chec API key. This may be a desirable option 
-    // if you are integrating your own customer authentication, and simply need a token to authorize API requests as your customer with.
-    /*
-    const res2  = await gai.post("http://api.chec.io/v1/customers/"+res1.customer_id+"/issue-token")
-    console.log(res2)
-    */
-    const url2 = new URL(
-      //"https://api.chec.io/v1/customers/cstmr_zkK6oL9PaR5Xn0/issue-token"
-      "https://api.chec.io/v1/customers/"+result.customer_id+"/issue-token"
-  );
-  
-  let headers2 = {
-      "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
-      "Accept": "application/json",
-      "Content-Type": "application/json",
-  };
-  
-  let result3={}
-  await fetch(url2, {
-      method: "POST",
-      headers: headers2,
+      body: JSON.stringify(body)
   })
       .then(response => response.json())
-      .then(json => {console.log(json);result3=json});
+      .then(json => {
+        console.log(json);
+        customerId=json.id
+        if(customerId!==undefined){
+          //console.log("signup success")
+          //Get customer
+          const url = new URL(
+            "https://api.chec.io/v1/customers/"+customerId
+        );
+        
+        let headers = {
+            "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        };
+        
+        fetch(url, {
+            method: "GET",
+            headers: headers,
+        })
+            .then(response => response.json())
+            .then(json => {
+              //console.log(json);
+              setToken(json.id);
+              setCustomer(json)
+              window.location.href="/"
+              // TODO add password, email, customerId pair to auth API here
+              });
 
-  // jwt got now
-  //
-  const url3 = new URL(
-    "https://api.chec.io/v1/customers/"+result3.customer_id+"/orders"
-);
-
-let headers3 = {
-    "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
-    "Accept": "application/json",
-    "Content-Type": "application/json",
-};
-
-await fetch(url3, {
-    method: "GET",
-    headers: headers3,
-})
-    .then(response => response.json())
-    .then(json => console.log(json));
+          
+        }else{
+          console.log("signup failed")
+        }
+      });
+        
 
   }
+
+
+  const getCustomer =  async (event) => {
+    event.preventDefault();
+    // TODO fetch customerId from auth API
+            const customerId=undefined;
+              //Get customer
+            const url = new URL(
+                "https://api.chec.io/v1/customers/"+customerId
+            );
+            
+            let headers = {
+                "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            };
+            
+            fetch(url, {
+                method: "GET",
+                headers: headers,
+            })
+            .then(response => response.json())
+            .then(json => {console.log(json);setToken(json.id);window.location.href="/";});
+                  //window.location.href="/"
+
+  }
+
+
 
   const fetchOrderHistories = async () => {
     const data = await commerce.customer.getOrders();
     console.log(data)
-    setRows(data.data)
+    setOrders(data.data)
     
   };
 
-  const fetchProducts = async () => {
-    const { data } = await commerce.products.list()
-    console.log(data)
-    let aa=[]
-    for(let i=0;i<data.length;i++){
-      aa.push(data[i].id)
-    }
-    console.log(aa)
-    //console.log(JSON.stringify(data, null, 2))
-    setProducts(data)
+  const fetchCategories = async () => {
+    commerce.categories.list()
+    .then(categories =>{
+      //console.log(categories.data.map(category=>category.name))
+      setCategories(categories.data.map(category=>category.name))
+    })
   }
 
+
+
+  const fetchProductsWithParams = async () => {
+    const limit = 50;
+    const categorySlug = 'down';
+    
+    commerce.products.list({
+      limit: limit,
+      category_slug: categorySlug,
+    }).then(response =>{
+      console.log(response.data)
+      setProducts(response.data)
+    });
+
+    //console.log(JSON.stringify(data, null, 2))
+    
+  }
 
   const fetchCart = async () => {
     // Retrieve the customers current cart (tracked by their browser)
-    const data = await commerce.cart.retrieve()
-    console.log(JSON.stringify(data, null, 2))
-    setCart(await commerce.cart.retrieve())
-    //setCart(data)
+    await commerce.cart.retrieve().then(cart => {
+      console.log(cart)
+      //console.log(JSON.stringify(cart, null, 2))
+      setCart(cart)
+    });
   }
 
-  const handleAddToCart = async (productId, quantity) => {
-    const item = await commerce.cart.add(productId, quantity)
-    console.log(JSON.stringify(item, null, 2))
-    setCart(item.cart)
-    setOpen(true)
-    setSnackbarText('買い物かごへ追加しました')
+  const handleAddToCart = async (productId, quantity, variantId) => {
+    console.log(variantId)
+    await commerce.cart.add(productId, quantity,  variantId )
+    .then(json => {
+      //console.log(json)
+      setCart(json.cart)
+      setOpen(true)
+      setSnackbarText(json.product_name+' を買い物かごへ追加しました')
+    });
   }
 
   const handleUpdateCartQty = async (lineItemId, quantity) => {
-    const response = await commerce.cart.update(lineItemId, { quantity })
-
-    setCart(response.cart)
-    setOpen(true);
-    setSnackbarText('買い物かごの商品数を変更しました')
+    await commerce.cart.update(lineItemId, { quantity })
+    .then(json => {
+      //console.log(json)
+      setCart(json.cart)
+      setOpen(true)
+      setSnackbarText(json.product_name+' の商品数を変更しました')
+    });
   }
 
   const handleRemoveFromCart = async (lineItemId) => {
@@ -382,7 +325,6 @@ await fetch(url3, {
 
   const refreshCart = async () => {
     const newCart = await commerce.cart.refresh()
-
     setCart(newCart)
   }
 
@@ -408,7 +350,7 @@ await fetch(url3, {
     <div >
   <ThemeProvider theme={theme}>
   <BrowserRouter>
-      <Navbar totalItems={cart.total_items} />
+      <Navbar totalItems={cart.total_items} cusotmer={customer} />
       {/*if current path is /a or /searched-items ||window.location.pathname.includes('/collections') 
       {(window.location.pathname==='/a')?
       <Grid container spacing={2} justify="center" alignItems="center" >
@@ -423,23 +365,25 @@ await fetch(url3, {
       <MySnackbar open={open} setOpen={setOpen} snackbarText={snackbarText} />
       <Divider sx={{margin:'10px'}}/>
       <Routes>
-      <Route exact path="/" element={<Invoices products={products} loading={loading} customer={customer} onAddToCart={handleAddToCart} />} />
+      <Route exact path="/a" element={<Invoices products={products} loading={loading} customer={customer} onAddToCart={handleAddToCart} />} />
       <Route path="/cart" element={<Cart cart={cart} onUpdateCartQty={handleUpdateCartQty} onRemoveFromCart={handleRemoveFromCart} onEmptyCart={handleEmptyCart} />} />
       <Route path="/checkout" element={<Checkout cart={cart} order={order} customer={customer} onCaptureCheckout={handleCaptureCheckout} error={errorMessage} />} />
       <Route exact path="/product-view/:id" element={<ProductView  onAddToCart={handleAddToCart} />} />
-      <Route exact path="/signin" element={<SignIn onSignIn={signInChec} />} />
-      <Route exact path="/signup" element={<SignUp onSignUp={signUpChec} />} />
+      <Route exact path="/signin" element={<SignIn />} />
+      <Route exact path="/signup" element={<SignUp />} />
       <Route path="/registration-success/:token" element={<Expenses />} />
-      <Route exact path="/orders" element={<OrderTable rows={rows} />} />
+      <Route exact path="/orders" element={<OrderTable rows={orders} />} />
       <Route exact path="/order-detail/:id" element={<OrderTable />} />
 
-      <Route exact path="/a" element={<Home products={products} loading={loading} customer={customer} onAddToCart={handleAddToCart} />} />
+      <Route exact path="/" element={<Home products={products} loading={loading} customer={customer} categories={categories} onAddToCart={handleAddToCart} />} />
       <Route exact path="/collections/:tag" element={<SearchedItems products={products} loading={loading} customer={customer} onAddToCart={handleAddToCart} />} />
 
       <Route exact path="/signina" element={<SignIna />} />
-      <Route exact path="/signupa" element={<SignUpa />} />
-      <Route exact path="/carta" element={<CartItem />} />
-      <Route exact path="/product-viewa/:id" element={<ProDet  onAddToCart={handleAddToCart} />} />
+      <Route exact path="/signupa" element={<SignUpa createCustomer={createCustomer} />} />
+      <Route exact path="/carta" element={<CartItem cart={cart} onUpdateCartQty={handleUpdateCartQty} onEmptyCart={handleEmptyCart} onRemoveFromCart={handleRemoveFromCart} />} />
+      <Route exact path="/products/:product" element={<ProDet  onAddToCart={handleAddToCart} products={products} />} />
+      <Route exact path="/checkouta" element={<Checkouta customer={customer} cart={cart} onCaptureCheckout={handleCaptureCheckout} />} />
+      <Route exact path="/account" element={<MyAccount orders={orders} />} />
 
       </Routes>
       <Footer title={"Online Fashion Store with React + MUI + k8s"} description={"S.AIKAWA"} />
