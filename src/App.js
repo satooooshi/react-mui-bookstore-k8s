@@ -116,37 +116,6 @@ export default function App() {
   }, []) // [] is for useEffectをマウント時に1回だけ実行する方法
 
 
-  const fetchCustomerInfo = async () => {
-    /*
-    const ok = await commerce.customer.isLoggedIn()
-    console.log(ok)
-    const  data  = await commerce.customer.about()
-    console.log(data)
-    setLoading(ok)
-    setCustomer(data)*/
-    let customerId=localStorage.getItem('token')
-    console.log(customerId)
-    customerId=customerId.substring(1,customerId.length-1)
-    console.log(customerId)
-    const url = new URL(
-      "https://api.chec.io/v1/customers/"+customerId
-  );
-  
-  let headers = {
-      "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
-      "Accept": "application/json",
-      "Content-Type": "application/json",
-  };
-  
-  fetch(url, {
-      method: "GET",
-      headers: headers,
-  })
-      .then(response => response.json())
-      .then(json => {console.log(json);setCustomer(json);});
-  }
-
-
   const createCustomer =  async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -207,11 +176,33 @@ export default function App() {
               //console.log(json);
               setToken(json.id);
               setCustomer(json)
-              window.location.href="/"
+              
               // TODO add password, email, customerId pair to auth API here
+
+              // add chec customer to self-proviced auth API to allow authentication with email and password
+              //addCustomerToAuthApi({customer_id:resultChec.id, email:resultChec.email, firstname, lastname, password})
+              const url2 = new URL(
+                "http://localhost:3002/api/register/"+json.id+"/"+email+"/"+firstname+"/"+lastname+"/"+password
+              );
+
+              let headers2 = {
+                "Content-Type": "application/json  charset=UTF-8",
+                "Accept": "application/json",
+              };
+
+              fetch(url2, {
+                method: "GET",
+                headers: headers2
+              })
+              .then(response => response.json())
+              .then(json => {
+                console.log(json);
               });
 
-          
+               //window.location.href="/"
+
+              });
+
         }else{
           console.log("signup failed")
         }
@@ -267,7 +258,7 @@ export default function App() {
 
   const fetchProductsWithParams = async () => {
     const limit = 50;
-    const categorySlug = 'down';
+    const categorySlug = 'sweatshirt'
     
     commerce.products.list({
       limit: limit,
@@ -345,6 +336,41 @@ export default function App() {
   }
 
 
+  const handleSignIn =  async (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    for (var value of data.values()) {
+        console.log(value);
+    }
+    let email=data.get('email')
+    let password=data.get('password')
+
+    // login with self-provided auth API
+    //let result=fetchCustomerFromAuthApi({email, password})
+    const url1 = new URL(
+      "http://localhost:3002/api/login/"+email+"/"+password
+    );
+    let headers1 = {
+      "Content-Type": "application/json  charset=UTF-8",
+      "Accept": "application/json",
+    };
+
+    fetch(url1, {
+      method: "GET",
+      headers: headers1
+    })
+    .then(response => response.json())
+    .then(json => {
+      console.log(json);
+      if(json.customer_id!==undefined){
+        //window.location.href="/"
+      }else{
+        console.log("signin failed")
+      }
+    });
+
+}
+
 
   return (
     <div >
@@ -378,7 +404,7 @@ export default function App() {
       <Route exact path="/" element={<Home products={products} loading={loading} customer={customer} categories={categories} onAddToCart={handleAddToCart} />} />
       <Route exact path="/collections/:tag" element={<SearchedItems products={products} loading={loading} customer={customer} onAddToCart={handleAddToCart} />} />
 
-      <Route exact path="/signina" element={<SignIna />} />
+      <Route exact path="/signina" element={<SignIna onSignIn={handleSignIn} />} />
       <Route exact path="/signupa" element={<SignUpa createCustomer={createCustomer} />} />
       <Route exact path="/carta" element={<CartItem cart={cart} onUpdateCartQty={handleUpdateCartQty} onEmptyCart={handleEmptyCart} onRemoveFromCart={handleRemoveFromCart} />} />
       <Route exact path="/products/:product" element={<ProDet  onAddToCart={handleAddToCart} products={products} />} />

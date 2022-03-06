@@ -75,18 +75,20 @@ app.get('/api/register/:customerId/:email/:firstname/:lastname/:password', (req,
   }
 
   // add new registered customer
-  const newCustomer={
+  customers.push({
     customer_id:customer_id,
     firstname:firstname,
     lastname:lastname,
     email:email,
     password:password
-  };
-  console.log(newCustomer)
-  customers.push(newCustomer)
+  })
 
   res.send({
-    newCustomer
+    customer_id:customer_id,
+    firstname:firstname,
+    lastname:lastname,
+    email:email,
+    password:password
   })
   
 });
