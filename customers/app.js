@@ -20,6 +20,7 @@ let customers=[
     lastname: 'testlastname',
     email: 'test@qq.com',
     password: 'test',
+    cart_id:'',
   },
 ]
 
@@ -45,13 +46,32 @@ app.get('/api/login/:email/:password', (req, res) => {
   for(let i=0;i<customers.length;i++){
     if( customers[i].email===email && customers[i].password===password ){
       res.send({
-        customer_id: customers[i].customer_id
+        customer_id: customers[i].customer_id,
+        cart_id: customers[i].cart_id
       })
     }
   }
 
   res.send({
     customer_id: undefined
+  })
+  
+});
+
+app.get('/api/cart/:customerId/:cartId', (req, res) => {
+  console.log(req.params)
+  const customerId = req.params.customerId;
+  const cartId = req.params.cartId;
+  
+  for(let i=0;i<customers.length;i++){
+    if( customers[i].customer_id===customerId ){
+      customers[i].cart_id=cartId
+      res.send(customers[i])
+    }
+  }
+
+  res.status(400).send({
+    message: 'customerId provided not found.'
   })
   
 });

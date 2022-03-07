@@ -5,6 +5,8 @@ import BadgeUnstyled from '@mui/base/BadgeUnstyled';
 import PropTypes from 'prop-types';
 
 import Product from './Product';
+import MySnackbar from './MySnackbar'
+import ProductReview from './ProductReview';
 
 import {commerce} from './lib/commerce';
 
@@ -16,23 +18,23 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-export default function ProdcutDetail({products, onAddToCart}) {
+export default function ProdcutDetail() {
 
   const [images, setImages] = React.useState([])
   const [selectedImage, setSelectedImage] = React.useState('')
 
-  const [sizes, setSizes] = useState([])
-  const [colors, setColors] = useState([])
   const [variants, setVariants] = useState([])
   const [opdict, setOpdict] = useState({})
   const [vdict, setVdict] = useState({})
 
-  const [selectedSize, setSelectedSize] = useState('') 
-  const [selectedColor, setSelectedColor] = useState('') 
-
   const [product, setProduct] = useState({})
 
   const [selected, setSelected] = React.useState('')
+
+
+    // snackbar
+    const [open, setOpen] = React.useState(false)
+    const [snackbarText, setSnackbarText] = React.useState('')
 
 
 
@@ -57,8 +59,8 @@ export default function ProdcutDetail({products, onAddToCart}) {
       setProduct(product)
       setImages(product.assets.map(asset=>asset.url))
       setSelectedImage(product.assets.map(asset=>asset.url)[0])
-      setSizes(product.variant_groups.filter(variant=>variant.name==="size")[0].options.map(option=>{return {id:option.id, name:option.name} }))
-      setColors(product.variant_groups.filter(variant=>variant.name==="color")[0].options.map(option=>{return {id:option.id, name:option.name} }))
+      //setSizes(product.variant_groups.filter(variant=>variant.name==="size")[0].options.map(option=>{return {id:option.id, name:option.name} }))
+      //setColors(product.variant_groups.filter(variant=>variant.name==="color")[0].options.map(option=>{return {id:option.id, name:option.name} }))
       // vid, vgrp name --> dict
       let vdicta={};
       console.log(product.variant_groups.map(group=>{vdicta[group.id]=group.name; return {id:group.id, name:group.name, options:group.options}}))
@@ -110,7 +112,46 @@ export default function ProdcutDetail({products, onAddToCart}) {
     console.log(event.target.src)
     setSelectedImage(event.target.src)
 
-  };  
+  }; 
+
+
+  const handleAddToCart = async (productId, quantity, variantId) => {
+    if(localStorage.getItem('token')==null)window.location.href="/signin"
+    let cartId=localStorage.getItem('cart_id')
+    console.log(cartId)
+    console.log(variantId)
+
+    const url = new URL(
+      "https://api.chec.io/v1/carts/"+cartId
+    );
+  
+    let headers = {
+      "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    };
+  
+    let body = {
+      "id": productId,
+      "quantity": quantity,
+      "variant_id": variantId
+    }
+  
+    fetch(url, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(body)
+    })
+      .then(response => response.json())
+      .then(json => {
+        console.log(json)
+        //setCart(json.cart)
+        setOpen(true)
+        setSnackbarText(json.product_name+' を買い物かごへ追加しました')
+      });
+
+  }
+
   
   if(product.variant_groups===undefined)return "loading"
 
@@ -119,6 +160,7 @@ export default function ProdcutDetail({products, onAddToCart}) {
       flexGrow: 1,
       backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
     }} >
+      <MySnackbar open={open} setOpen={setOpen} snackbarText={snackbarText} />
       <Grid container spacing={2} >
         <Grid item md={12} >
           <Item elevation={0} ><img width="600" height="600"  src={selectedImage} alt="海の写真" title="空と海"/></Item>
@@ -151,6 +193,7 @@ export default function ProdcutDetail({products, onAddToCart}) {
           <Item elevation={0} sx={{ height:30,}}><VariantButtonGroup variants={variants} vdict={vdict} opdict={opdict} selected={selected} handleChange={handleChange} /></Item>
         </Grid>
         {/* 
+          バリエーションの表示の仕方のオルタナティブ
         <Grid item xs={6} md={8}>
           <Item elevation={0} sx={{ height:30,}}>カラー:</Item>
         </Grid>
@@ -179,7 +222,7 @@ export default function ProdcutDetail({products, onAddToCart}) {
           </Item>
         </Grid>
         <Grid item md={12}>
-          <Item elevation={0} sx={{ height:30,}}><Button disabled={false} onClick={ () => onAddToCart(product.id, 1, selected)} variant="contained">カートに入れる</Button></Item>
+          <Item elevation={0} sx={{ height:30,}}><Button disabled={false} onClick={ () => handleAddToCart(product.id, 1, selected)} variant="contained">カートに入れる</Button></Item>
         </Grid>
         <Grid item md={12}>
           <Item elevation={0} sx={{ }}><BasicTabs product={product} /></Item>
@@ -187,6 +230,7 @@ export default function ProdcutDetail({products, onAddToCart}) {
         <Grid item md={12}>
           <Item elevation={0} sx={{ height:30,}}>おすすめ関連アイテム</Item>
         </Grid>
+        {/** 
         <Grid container justify="center" spacing={5} >
         {products.map((product,idx) => (
             <Grid item key={idx} lg={3} >
@@ -194,37 +238,17 @@ export default function ProdcutDetail({products, onAddToCart}) {
             </Grid>
           ))}
         </Grid>
+        */}
         <Grid item md={12}>
-          <Item elevation={0} sx={{ height:30,}}>この商品のレビュー</Item>
+          <Item elevation={0}>この商品のレビュー</Item>
+        </Grid>
+        <Grid item md={12}>
+          <Item elevation={0}><ProductReview /></Item>
         </Grid>
       </Grid>
     </Paper>
   );
 }
-
-
-
-let text="        シックな印象のスリムスラックス🇰🇷   \
-スリムなサイズ感なので履くだけで脚が長く見えます💪     \
-\
-シャツやジャケットなどと合わせる綺麗めコーデがお好きな方にもおすすめ◎ \
-\
-サイズ \
-【M】\
-長さ：100cm/ヒップ：95cm/ウエスト：80cm \
-【L】\
-長さ：101cm/ヒップ：99cm/ウエスト：84cm \
-【XL】\
-長さ：102cm/ヒップ：102cm/ウエスト：88cm \
-【2XL】\
-長さ：103cm/ヒップ：103cm/ウエスト：92cm \
-\
-参考推奨サイズ \
-(M) 161~170cm/50~60kg \
-(L) 170~175cm/60~65kg \
-(XL) 175~185cm/65~77kg \
-(2XL) 180~190cm/75~90kg \
-※採寸には測定方法が異なるため多少の誤差 (1～3cm程)がある場合がございます。"
 
 
 function TabPanel(props) {
@@ -319,15 +343,12 @@ function VariantButtonGroup({variants, vdict, opdict, handleChange, selected}) {
       <ButtonGroup variant="text" aria-label="text button group">
                 {variants.map((elem, idx) => (
                   //<Button value={elem.variant_id} sx={{backgroundColor:selected===elem.variant_id?'black':'white', color:selected===elem?'white':'black'}} onClick={handleChange} >{elem.variant_id}</Button>
-                  <Button value={elem.variant_id} sx={{backgroundColor:selected===elem.variant_id?'black':'white', color:selected===elem.variant_id?'white':'black'}} onClick={handleChange} >{opdict[elem.options[Object.keys(elem.options)[0]]]+", "+opdict[elem.options[Object.keys(elem.options)[1]]]}</Button>
+                  <Button key={idx} value={elem.variant_id} sx={{backgroundColor:selected===elem.variant_id?'black':'white', color:selected===elem.variant_id?'white':'black'}} onClick={handleChange} >{opdict[elem.options[Object.keys(elem.options)[0]]]+", "+opdict[elem.options[Object.keys(elem.options)[1]]]}</Button>
                 ))}
       </ButtonGroup>
     </Box>
   );
 }
-
-
-
 
 
 const StyledBadge = styled(BadgeUnstyled)`
@@ -395,18 +416,5 @@ function BadgeContent() {
         verticalAlign: 'middle',
       }}
     />
-  );
-}
-
-function UnstyledBadge() {
-  return (
-    <Box sx={{ '& > :not(style) + :not(style)': { ml: 4 } }}>
-      <StyledBadge badgeContent={'10％OFF'}>
-        <BadgeContent />
-      </StyledBadge>
-      <StyledBadge badgeContent={5} variant="dot">
-        <BadgeContent />
-      </StyledBadge>
-    </Box>
   );
 }

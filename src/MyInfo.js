@@ -4,7 +4,6 @@ import { Card, Box, Avatar, Stack, Typography, IconButton, Divider, Chip, Switch
 import { LocationOn, Edit } from '@mui/icons-material';
 import { grey } from '@mui/material/colors';
 
-import useToken from './components/SignInUp/useToken';
 import SignIn from './components/SignInUp/SignIn'
 
 import {commerce} from './lib/commerce'
@@ -32,7 +31,7 @@ export default function MyInfo({loading, customer}) {
     justifyContent="space-between"
     sx={{ px: 2, py: 1, bgcolor: 'background.default' }}
   >
-    <Button variant="outlined" onClick={() => {commerce.customer.logout();}} >ログアウトする</Button>
+    <Button variant="outlined" onClick={() => {localStorage.removeItem('token');localStorage.removeItem('cart_id');window.location.href="/"}} >ログアウトする</Button>
   </Stack>
 </Card>
     );

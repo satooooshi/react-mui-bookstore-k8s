@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from "react";
 import { styled } from '@mui/material/styles';
-import Card from '@mui/material/Card';
+import { Card, Grid } from '@mui/material'
 import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
@@ -17,10 +17,26 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Rating from '@mui/material/Rating';
 
+
+let review={
+    review_id: 'review_86627e8f-7911-4fbd-aab8-aa2c5f3b7e75',
+    title: 'おススメです',
+    stars: 5,
+    date: 'Tue Oct 05 2021 03:04:40 GMT+0900 (日本標準時)',
+    content: '軽くて着やすい！風を通さず暖かい. 168am 58kg. サイズはMでベストサイズでした',
+    customer_id: 'customer_5fc8f47f-cc6c-4535-b171-abdb276adb7b',
+    product_id: 'prod_ZM8X5nL6Orwpv4'
+}
+
+
 export default function ProductReview() {
 
   return (
-    <Card sx={{ maxWidth: 345 }}>
+
+    <Grid container justify="center" spacing={1} >
+    {[1,2,3].map((reviewa, idx) => (
+    <Grid item key={idx} xs={12} sm={6} md={4} lg={3}>
+    <Card elevation={1} sx={{ maxWidth: 345 }}>
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
@@ -44,5 +60,8 @@ export default function ProductReview() {
         </IconButton>
       </CardActions>
     </Card>
+    </Grid>
+    ))}
+    </Grid>
   );
 }

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react'
 import { styled } from '@mui/material/styles';
 import {Box,Button, Paper, Grid, Rating, Divider,  ButtonGroup } from '@mui/material';
 import { Input, InputAdornment } from '@mui/material';
@@ -10,10 +10,10 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
 import SearchBar from './SearchBar'
-
 import Product from './Product';
 
-import useToken from './useToken'
+import {commerce} from './lib/commerce'
+
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -24,9 +24,45 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 
-export default function Home({customer, products, categories}) {
+export default function Home({}) {
 
-  const { token, setToken } = useToken() // save in localStorage
+  const [products, setProducts] = useState([])
+  const [categories, setCategories] = useState([])
+  const [ loading, setLoading ] = useState(true)
+
+  useEffect(() => {
+    fetchCategories()
+    fetchProductsWithParams()
+  }, []) // [] is for useEffectをマウント時に1回だけ実行する方法
+
+
+  const fetchProductsWithParams = async () => {
+    setLoading(true)
+    const limit = 50;
+    const categorySlug = 'sweatshirt'
+    
+    commerce.products.list({
+      limit: limit,
+      category_slug: categorySlug,
+    }).then(response =>{
+      console.log(response.data)
+      setProducts(response.data)
+      setLoading(false)
+    });
+
+  }
+
+  const fetchCategories = async () => {
+    setLoading(true)
+    commerce.categories.list()
+    .then(categories =>{
+      setCategories(categories.data.map(category=>({name:category.name, image:category?.assets[0]?.url})))
+      setLoading(false)
+    })
+  }
+
+
+  if(loading)return 'loading'
 
   return (
     <Paper elevation={0} sx={{
@@ -34,10 +70,6 @@ export default function Home({customer, products, categories}) {
       backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
     }} >
       <Grid container spacing={1} justify="center" alignItems="center" >
-
-      <Grid item xs={6} md={12}>
-          <Item elevation={0} >{token}</Item>
-        </Grid>
 
         <Grid item xs={6} md={12}>
           <Item elevation={0} >韓国ファッションメンズ通販サイト</Item>
@@ -78,13 +110,13 @@ export default function Home({customer, products, categories}) {
         <Grid item xs={6} md={12}>
         <Grid container justifyContent="center" spacing={2}>
         {categories.map((elem,idx) => (
-        <Grid item md={3}>
+        <Grid item key={idx} md={3}>
         <Item>
         <Grid item md={12} >
-          <Item elevation={0} sx={{ height:180,}}><img width="180" height="180"  src="https://cdn.shop-list.com/res/up/shoplist/shp/__thum370__/ueno-shokai/435121302-60/1.jpg" alt="海の写真" title="空と海"/></Item>
+          <Item elevation={0} sx={{ height:180,}}><img width="180" height="180"  src={elem?.image} alt="海の写真" title="空と海"/></Item>
         </Grid>
         <Grid item md={12} >
-          <Item elevation={0} sx={{height:30,}}>{elem}</Item>
+          <Item elevation={0} sx={{height:30,}}><Button href={"/collections/"+elem.name}>{elem.name}</Button></Item>
         </Grid>
         </Item>
         </Grid>
@@ -120,58 +152,9 @@ function VariantButtonGroup({elems}) {
     >
       <ButtonGroup variant="text" aria-label="text button group">
                 {elems.map((elem, idx) => (
-                  <Button value={elem} sx={{backgroundColor:selected===elem?'black':'white', color:selected===elem?'white':'black'}} onClick={handleChange} >{elem}</Button>
+                  <Button key={idx} value={elem} sx={{backgroundColor:selected===elem?'black':'white', color:selected===elem?'white':'black'}} onClick={handleChange} >{elem}</Button>
                 ))}
       </ButtonGroup>
     </Box>
-  );
-}
-
-
-
-
-
-function SimpleAccordion() {
-  return (
-    <div>
-      <Accordion elevation={0} expanded={true} >
-        
-        <AccordionSummary
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-        >
-          <Typography>色々な条件で探してみる</Typography>
-          <SearchIcon />
-        </AccordionSummary>
-        <AccordionDetails>
-        <Grid container justifyContent="flex-start" alignItems="flex-start" spacing={2}>
-        <Grid item md={12}>
-        <Input
-          type="text"
-          placeholder="キーワードで探す"
-          onChange={(event) => {
-            //setSearchTerm(event.target.value);
-          }}
-          startAdornment={
-            <InputAdornment position="start">
-              <SearchIcon />
-            </InputAdornment>
-          }
-        />
-        </Grid>
-        <Grid item md={12}>
-        <Typography>
-            おすすめキーワードはこちら
-        </Typography>
-        </Grid>
-        <Grid item md={12}>
-        <VariantButtonGroup elems={['ジャケット','ボア','レザー','ブルゾン','コート']} />
-        </Grid>
-      </Grid>
-      <br/>
-        </AccordionDetails>
-      </Accordion>
-     
-    </div>
   );
 }

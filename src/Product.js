@@ -38,7 +38,7 @@ export default function FullWidthGrid({product}) {
           <Item elevation={0} sx={{ height:30,}}>{product.price.formatted_with_code}</Item>
         </Grid>
         <Grid item md={6}>
-          <Item elevation={0} sx={{ height:30,}}><Button onClick={handleClick} variant="outlined">ウィッシュリストへ</Button></Item>
+          <Item elevation={0} sx={{ height:30,}}><Button onClick={handleClick} variant="outlined">後で見る</Button></Item>
         </Grid>
         <Grid item md={6}>
           <Item elevation={0} sx={{ height:30,}}><Button href={"/products/"+product?.id} variant="contained">詳しく</Button></Item>

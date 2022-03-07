@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
 import { styled } from '@mui/material/styles';
-import { useNavigate } from 'react-router-dom';
 import { Box, Button, Checkbox, Link, Typography, Container, FormControlLabel, CssBaseline, ThemeProvider, TextField, Paper, Grid, Divider,InputLabel, Select, MenuItem } from '@mui/material';
-import {commerce} from './lib/commerce'
 import ModalUnstyled from '@mui/base/ModalUnstyled';
+
+import {commerce} from './lib/commerce'
 
 import { Elements, CardElement, ElementsConsumer } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { SettingsBackupRestoreOutlined } from '@mui/icons-material';
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -38,7 +36,7 @@ curl -X POST \
     -d '{"id":"prod_Op1YoVEALgwXLv","variant_id":"vrnt_LvJjoPbObRle0n"}'
 */
 
-export default function Checkout({ onCaptureCheckout}) {
+export default function Checkout() {
   const [firstname, setFirstname] = useState('');
   const [lastname, setLastname] = useState('');
   const [email, setEmail] = useState('');
@@ -47,6 +45,9 @@ export default function Checkout({ onCaptureCheckout}) {
   const [shippingCountry, setShippingCountry] = useState('');
   const [shippingSubdivisions, setShippingSubdivisions] = useState([]);
   const [shippingSubdivision, setShippingSubdivision] = useState('');
+
+  // handleCheckout
+  const [errorMessage, setErrorMessage] = useState('')
 
 
   const [ customer, setCustomer ] = useState(undefined)
@@ -76,7 +77,7 @@ export default function Checkout({ onCaptureCheckout}) {
       // https://commercejs.com/docs/api/?javascript--cjs#capture-order
       const orderData = {
         line_items: checkoutToken.live.line_items,
-        customer: { firstname: 'aa', lastname: 'bb', email: 'example@qq.com' },
+        customer: { id:localStorage.getItem('token') },
         //shipping: { name: 'International', street: shippingData.address1, town_city: shippingData.city, county_state: shippingData.shippingSubdivision, postal_zip_code: shippingData.zip, country: shippingData.shippingCountry },
         //fulfillment: { shipping_method: shippingData.shippingOption },
         payment: {
@@ -103,7 +104,7 @@ export default function Checkout({ onCaptureCheckout}) {
         */
       };
 
-      onCaptureCheckout(checkoutToken.id, orderData);
+      handleCaptureCheckout(checkoutToken.id, orderData);
 
     }
   };
@@ -138,7 +139,6 @@ export default function Checkout({ onCaptureCheckout}) {
     console.log(cart)
     let customerId=localStorage.getItem('token')
     console.log(customerId)
-    customerId=customerId.substring(1,customerId.length-1)
     console.log(customerId)
     const url = new URL(
       "https://api.chec.io/v1/customers/"+customerId
@@ -165,6 +165,50 @@ export default function Checkout({ onCaptureCheckout}) {
       });
 
   }, []) // [] is for useEffectをマウント時に1回だけ実行する方法
+
+
+
+
+  const handleCaptureCheckout = async (checkoutTokenId, newOrder) => {
+    try {
+      // Captures an order and payment by converting a checkout token and necessary data into an order object, and charging all related transactions.
+      const incomingOrder = await commerce.checkout.capture(checkoutTokenId, newOrder)
+      console.log(incomingOrder)
+      // create new cart and add to auth API
+      const createCart = async () => {
+        // Retrieve the customers current cart (tracked by their browser)
+        await commerce.cart.refresh()
+        .then(cart => {
+            console.log(cart)
+            localStorage.setItem('cart_id', cart.id)
+            const customerId=localStorage.getItem('token')
+            const url3 = new URL(
+              "http://localhost:3002/api/cart/"+customerId+"/"+cart.id
+            );
+
+            let headers3 = {
+              "Content-Type": "application/json  charset=UTF-8",
+              "Accept": "application/json",
+            };
+            fetch(url3, {
+              method: "GET",
+              headers: headers3
+            })
+            .then(response => response.json())
+            .then(json => {
+                console.log(json);
+                // TODO  redirect to where??
+            });
+
+        });
+      }
+      createCart()
+    } catch (error) {
+      setErrorMessage(error.data.error.message)
+    }
+  }
+
+
 
   if(loading)return "loading"
   if(cart?.id===undefined)return 'cart loading'
@@ -317,7 +361,7 @@ export default function Checkout({ onCaptureCheckout}) {
         <Item elevation={0} ><ModalUnstyledDemo /></Item>
         </Grid>
       <Grid item xs={6} md={12}>
-        <Item elevation={0} ><Typography variant="h5">合計:      JPY ￥6,100</Typography></Item>
+        <Item elevation={0} ><Typography variant="h5">合計: {cart.subtotal.formatted_with_code}</Typography></Item>
         </Grid>
       <Divider sx={{margin:'10px'}}/>
          

@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
-import { gate } from 'react-router-dom';
 import { Box, Button, Checkbox, Link, Typography, Container, FormControlLabel, CssBaseline, ThemeProvider, TextField, Paper, Grid } from '@mui/material';
 
+import {commerce} from './lib/commerce'
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -11,8 +11,54 @@ const Item = styled(Paper)(({ theme }) => ({
   textAlign: 'center',
   color: theme.palette.text.secondary,
 }));
-///Users/satoshiaikawa/react-mui-bookstore-k8s/src/assets/jacket.gif
-export default function SignIn({onSignIn}) {
+
+export default function SignIn() {
+
+  const handleSignIn =  async (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    for (var value of data.values()) {
+        console.log(value);
+    }
+    let email=data.get('email')
+    let password=data.get('password')
+
+    // login with self-provided auth API
+    //let result=fetchCustomerFromAuthApi({email, password})
+    const url1 = new URL(
+      "http://localhost:3002/api/login/"+email+"/"+password
+    );
+    let headers1 = {
+      "Content-Type": "application/json  charset=UTF-8",
+      "Accept": "application/json",
+    };
+
+    fetch(url1, {
+      method: "GET",
+      headers: headers1
+    })
+    .then(response => response.json())
+    .then(json => {
+      console.log(json);
+      if(json.customer_id!==undefined){
+        localStorage.setItem('token', json.customer_id)
+        const fetchCartByCartId = async (cartId) => {
+          await commerce.cart.retrieve(cartId)
+          .then(cart => {
+            console.log(cart)
+            localStorage.setItem('cart_id', cart.id)
+            window.location.href="/"
+          });
+        }
+        fetchCartByCartId(json.cart_id)
+        
+      }else{
+        console.log("signin failed")
+      }
+    });
+
+}
+
   return (        
     <Paper
     elevation={0}
@@ -26,7 +72,7 @@ export default function SignIn({onSignIn}) {
     }}
   >
 
-      <Grid component="form" noValidate onSubmit={onSignIn} container spacing={2} justifyContent='center' alignItems='center' >
+      <Grid component="form" noValidate onSubmit={handleSignIn} container spacing={2} justifyContent='center' alignItems='center' >
 
         <Grid item xs={6} md={12}>
           <Item elevation={0} ><Typography variant="h5">ログイン</Typography><br/>メールとパスワードを入力してください:</Item>
@@ -72,7 +118,7 @@ export default function SignIn({onSignIn}) {
       <Grid item xs={6} md={12}>
           <Item elevation={0} >
           <Button
-            href="/signupa"
+            href="/signup"
             variant="text"
             sx={{ margin:'auto', height:70 }}
           >

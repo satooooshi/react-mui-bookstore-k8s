@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { styled } from '@mui/material/styles';
 import {Box,Button, Paper, Grid, Rating, Typography, Link} from '@mui/material';
+import MySnackbar from './MySnackbar'
 
 import {commerce} from './lib/commerce'
 
@@ -63,7 +64,52 @@ function CartItem({item, onUpdateCartQty, onRemoveFromCart}) {
 }
 
 
-export default function Cart({cart, onEmptyCart, onUpdateCartQty, onRemoveFromCart}) {
+export default function Cart() {
+
+
+  // snackbar
+  const [open, setOpen] = React.useState(false)
+  const [snackbarText, setSnackbarText] = React.useState('')
+
+  const [cart, setCart] = useState({})
+
+
+  useEffect(() => {
+    if(localStorage.getItem('token')==null)window.location.href="/signin"
+    fetchCartById()
+  }, []) // [] is for useEffectをマウント時に1回だけ実行する方法
+
+
+  const fetchCartById = async () => {
+    await commerce.cart.retrieve(localStorage.getItem('cart_id'))
+    .then(cart => {
+      console.log(cart)
+      setCart(cart)
+    });
+  }
+
+  const handleUpdateCartQty = async (lineItemId, quantity) => {
+    await commerce.cart.update(lineItemId, { quantity })
+    .then(json => {
+      //console.log(json)
+      setCart(json.cart)
+      setOpen(true)
+      setSnackbarText(json.product_name+' の商品数を変更しました')
+    });
+  }
+
+  const handleRemoveFromCart = async (lineItemId) => {
+    const response = await commerce.cart.remove(lineItemId)
+    setCart(response.cart)
+  }
+
+  const handleEmptyCart = async () => {
+    const response = await commerce.cart.empty()
+    setCart(response.cart)
+    setOpen(true);
+    setSnackbarText('買い物かごの中身を空にしました')
+  }
+
 
 
   const renderEmptyCart = () => (
@@ -72,7 +118,9 @@ export default function Cart({cart, onEmptyCart, onUpdateCartQty, onRemoveFromCa
     </Typography>
   );
 
+
   if(cart.id===undefined)return "loading"
+  
 
 
   if(cart.total_items===0)return renderEmptyCart()
@@ -82,6 +130,7 @@ export default function Cart({cart, onEmptyCart, onUpdateCartQty, onRemoveFromCa
       flexGrow: 1,
       backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
     }} >
+      <MySnackbar open={open} setOpen={setOpen} snackbarText={snackbarText} />
       <Grid container spacing={0} justifyContent="center" alignItems="center">
 
       <Grid item md={12} >
@@ -90,7 +139,7 @@ export default function Cart({cart, onEmptyCart, onUpdateCartQty, onRemoveFromCa
 
       {cart.line_items.map((item,idx) => (
         <Grid item key={idx} md={12} >
-          <Item key={idx} elevation={0} ><CartItem item={item} onUpdateCartQty={onUpdateCartQty} onEmptyCart={onEmptyCart} onRemoveFromCart={onRemoveFromCart} /></Item>
+          <Item key={idx} elevation={0} ><CartItem item={item} onUpdateCartQty={handleUpdateCartQty} onEmptyCart={handleEmptyCart} onRemoveFromCart={handleRemoveFromCart} /></Item>
         </Grid>
       ))}
 
@@ -102,13 +151,13 @@ export default function Cart({cart, onEmptyCart, onUpdateCartQty, onRemoveFromCa
           <Item elevation={0}>合計:&nbsp;{cart.subtotal.formatted_with_code}</Item>
         </Grid>
         <Grid item xs={4}>
-          <Item elevation={0}><Button type="button" onClick={ () => onEmptyCart()} >カートを空にする</Button></Item>
+          <Item elevation={0}><Button type="button" onClick={ () => handleEmptyCart()} >カートを空にする</Button></Item>
         </Grid>
         <Grid item xs={4}>
           <Item elevation={0}><Button type="button" href="/favorites" >お気に入りのアイテムから追加する</Button></Item>
         </Grid>
         <Grid item xs={4}>
-          <Item elevation={0}><Button type="button" href="/checkouta" >レジへ進む</Button></Item>
+          <Item elevation={0}><Button type="button" href="/checkout" >レジへ進む</Button></Item>
         </Grid>
 
         </Grid>

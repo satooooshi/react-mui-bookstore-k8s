@@ -22,11 +22,7 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-export default function SimpleAccordion({setSearchTerm}) {
-
-  const navigate = useNavigate();
-
-
+export default function SearchBar({setSearchTerm}) {
 
   return (
     <div>
@@ -44,7 +40,7 @@ export default function SimpleAccordion({setSearchTerm}) {
         <Grid item md={12}>
         <Input
           type="text"
-          placeholder="キーワードで探す"
+          placeholder="キーワードで絞り込む"
           onChange={(event) => {
             //setSearchTerm(event.target.value);
             setSearchTerm(event.target.value);
@@ -63,7 +59,7 @@ export default function SimpleAccordion({setSearchTerm}) {
         </Typography>
         </Grid>
         <Grid item md={12}>
-        <VariantButtonGroup elems={['ジャケット','ボア','レザー','ブルゾン','コート']} />
+        <VariantButtonGroup elems={['down','sweatshirt','turtleneck']} />
         </Grid>
       </Grid>
       <br/>
@@ -80,12 +76,6 @@ export default function SimpleAccordion({setSearchTerm}) {
 
 function VariantButtonGroup({elems}) {
   const [selected, setSelected] = React.useState('')
-  const navigate = useNavigate()
-
-  const handleClick = (event) => {
-    setSelected(event.target.value)
-    navigate('/collections/'+event.target.value)
-  };
   
   return (
     <Box
@@ -100,7 +90,7 @@ function VariantButtonGroup({elems}) {
     >
       <ButtonGroup variant="text" aria-label="text button group">
                 {elems.map((elem, idx) => (
-                  <Button component={Link} to={"/collections/"+elem} value={elem} sx={{backgroundColor:selected===elem?'black':'white', color:selected===elem?'white':'black'}} onClick={handleClick} >{elem}</Button>
+                  <Button key={idx} href={"/collections/"+elem} sx={{backgroundColor:selected===elem?'black':'white', color:selected===elem?'white':'black'}} >{elem}</Button>
                 ))}
       </ButtonGroup>
     </Box>
