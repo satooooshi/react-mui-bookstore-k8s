@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/reactfront/node_modules
+./reactfront/node_modules
 /customers/node_modules
 /reviews/node_modules
 /histories/node_modules
