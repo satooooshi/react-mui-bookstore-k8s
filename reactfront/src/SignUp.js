@@ -11,7 +11,7 @@ const Item = styled(Paper)(({ theme }) => ({
   textAlign: 'center',
   color: theme.palette.text.secondary,
 }));
-///Users/satoshiaikawa/react-mui-bookstore-k8s/src/assets/jacket.gif
+
 export default function SignUp() {
 
 
@@ -80,7 +80,7 @@ export default function SignUp() {
               //addCustomerToAuthApi({customer_id:resultChec.id, email:resultChec.email, firstname, lastname, password})
               const customerId=json.id
               const url2 = new URL(
-                "http://localhost:3002/api/register/"+customerId+"/"+email+"/"+firstname+"/"+lastname+"/"+password
+                process.env.REACT_APP_CUSTOMERS_API_URL+"/api/register/"+customerId+"/"+email+"/"+firstname+"/"+lastname+"/"+password
               );
 
               let headers2 = {
@@ -102,7 +102,7 @@ export default function SignUp() {
                         console.log(cart)
                         localStorage.setItem('cart_id', cart.id)
                         const url3 = new URL(
-                          "http://localhost:3002/api/cart/"+customerId+"/"+cart.id
+                          process.env.REACT_APP_CUSTOMERS_API_URL+"/api/cart/"+customerId+"/"+cart.id
                         );
           
                         let headers3 = {

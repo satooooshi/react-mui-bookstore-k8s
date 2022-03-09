@@ -44,3 +44,8 @@ services:
 # docker-compose up --build
 # docker-compose exec reactfront sh
 # docker-compose exec reactfront curl http://productsapi:3001/api/products
+
+
+#全コンテナ停止: docker stop $(docker ps -q)
+#全コンテナ削除: docker rm $(docker ps -q -a)
+#全イメージ削除: docker rmi $(docker images -q)

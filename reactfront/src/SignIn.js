@@ -26,7 +26,7 @@ export default function SignIn() {
     // login with self-provided auth API
     //let result=fetchCustomerFromAuthApi({email, password})
     const url1 = new URL(
-      "http://localhost:3002/api/login/"+email+"/"+password
+      process.env.REACT_APP_CUSTOMERS_API_URL+"/api/login/"+email+"/"+password
     );
     let headers1 = {
       "Content-Type": "application/json  charset=UTF-8",

@@ -183,7 +183,7 @@ export default function Checkout() {
             localStorage.setItem('cart_id', cart.id)
             const customerId=localStorage.getItem('token')
             const url3 = new URL(
-              "http://localhost:3002/api/cart/"+customerId+"/"+cart.id
+              process.env.REACT_APP_CUSTOMERS_API+"/api/cart/"+customerId+"/"+cart.id
             );
 
             let headers3 = {

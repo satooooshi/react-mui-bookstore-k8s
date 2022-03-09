@@ -10,7 +10,6 @@ import ProductVisited from './ProductVisited';
 
 import {commerce} from './lib/commerce'
 
-//process.env.REACT_APP_CUSTOMERS_API
 
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -31,22 +30,15 @@ export default function Home({}) {
   const [visited, setVisited] = useState([])
 
   useEffect(() => {
-    apitest()
+    //apitest()
     fetchCategories()
     fetchProductsWithParams()
     fetchVisitedHistories()
   }, []) // [] is for useEffectをマウント時に1回だけ実行する方法
 
   const apitest = async () => {
-    [
-      process.env.REACT_APP_API_NGINX_RP_URL+'/api/histories/hello',
-      process.env.REACT_APP_API_NGINX_RP_URL+'/api/customers/hello',
-      process.env.REACT_APP_API_NGINX_RP_URL+'/api/reviews/hello'
-
-    ].foreach( api => {
-
     const url = new URL(
-      api
+      process.env.REACT_APP_API_NGINX_RP_URL+'/api/customers/hello'
     )
     let headers = {
       "Accept": "application/json",
@@ -60,8 +52,6 @@ export default function Home({}) {
     .then(json => {
       console.log(json)
     })
-  })
-
   }
 
   const fetchProductsWithParams = async () => {
@@ -85,7 +75,7 @@ export default function Home({}) {
     const customerId=localStorage.getItem('token')
     setLoading(true)
     const url = new URL(
-      'http://localhost:3005/api/histories/get/visited/'+customerId
+      process.env.REACT_APP_HISTORIES_API_URL+'/api/histories/get/visited/'+customerId
     )
     let headers = {
       "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
