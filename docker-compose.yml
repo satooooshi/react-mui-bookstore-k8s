@@ -2,30 +2,30 @@ version: '3'
 services:
   reactfront:
     build:
-      context: .
+      context: ./reactfront
     image: superheatedboy/reactfront:latest
     ports:
       - "3000:3000"
     tty: true # コンテナが正常終了するのを防ぐ
 
-  customersapi:
+  customers:
     build:
       context: ./customers
-    image: superheatedboy/customersapi:latest
+    image: superheatedboy/customers:latest
     ports:
       - "3002:3002"
       
-  reviewsapi:
+  reviews:
     build:
       context: ./reviews
-    image: superheatedboy/reviewsapi:latest
+    image: superheatedboy/reviews:latest
     ports:
       - "3003:3003"
 
-  historiesapi:
+  histories:
     build:
       context: ./histories
-    image: superheatedboy/historiesapi:latest
+    image: superheatedboy/histories:latest
     ports:
       - "3005:3005"
       
@@ -42,5 +42,5 @@ services:
       - "3050:80"
 
 # docker-compose up --build
-# docker-compose exec reactbookfront sh
-# docker-compose exec reactbookfront curl http://productsapi:3001/api/products
+# docker-compose exec reactfront sh
+# docker-compose exec reactfront curl http://productsapi:3001/api/products

@@ -34,6 +34,12 @@ let customers=[
   }
  */
 
+  app.get('/api/customers/hello', function (req, res) {
+    res.send({
+      data:'hello customers'
+    })
+  })
+
 app.use('/api/testlogin', (req, res) => {
   res.send(customers);
 });

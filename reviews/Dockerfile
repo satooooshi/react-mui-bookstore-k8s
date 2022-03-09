@@ -3,7 +3,7 @@ WORKDIR /app
 COPY package.json ./
 RUN npm install
 COPY . .
-EXPOSE 3001
+EXPOSE 3003
 # CMD ["sleep", "3600"]
 # hit an ERR_OSSL_EVP_UNSUPPORTED error
 ENV NODE_OPTIONS=--openssl-legacy-provider

@@ -28,6 +28,12 @@ var requestTime = function (req, res, next) {
 // ミドルウェアのロード。最初にロードされたミドルウェア関数が常に最初に実行されます。
 app.use(requestTime)
 
+app.get('/api/reviews/hello', function (req, res) {
+  res.send({
+    data:'hello reviews'
+  })
+})
+
 function getReviewsByProductId(productId) {
   return reviews.filter(
     review => review.product_id === productId

@@ -13,6 +13,12 @@ app.use(cors());
 app.listen(port, host, () => console.log('API is running on '+host+':'+port))
 
 
+app.get('/api/histories/hello', function (req, res) {
+  res.send({
+    data:'hello histories'
+  })
+})
+
 app.get('/api/histories/add/visited/:customerId/:productId', function (req, res) {
   //console.log(req.params)
   const customerId = req.params.customerId
