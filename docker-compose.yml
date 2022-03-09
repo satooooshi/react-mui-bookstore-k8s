@@ -1,24 +1,17 @@
 version: '3'
 services:
-  reactbookfront:
+  reactfront:
     build:
       context: .
-    image: superheatedboy/reactbookfront:latest
+    image: superheatedboy/reactfront:latest
     ports:
       - "3000:3000"
     tty: true # コンテナが正常終了するのを防ぐ
 
-  productsapi:
+  customersapi:
     build:
-      context: ./productscarts
-    image: superheatedboy/productsapi:latest
-    ports:
-      - "3001:3001"
-
-  tokenapi:
-    build:
-      context: ./auth-tutorial
-    image: superheatedboy/tokenapi:latest
+      context: ./customers
+    image: superheatedboy/customersapi:latest
     ports:
       - "3002:3002"
       
@@ -28,11 +21,20 @@ services:
     image: superheatedboy/reviewsapi:latest
     ports:
       - "3003:3003"
+
+  historiesapi:
+    build:
+      context: ./histories
+    image: superheatedboy/historiesapi:latest
+    ports:
+      - "3005:3005"
       
   nginx:
     depends_on:
-      - productsapi
-      - reactbookfront
+      - customers
+      - reviews
+      - histories
+      - reactfront
     restart: always
     build:
       context: ./nginxrp

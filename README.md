@@ -170,3 +170,7 @@ kubectl apply -f reactproductstoken.yaml
 
 
 
+
+
+# micro services
+access to localhost:3050

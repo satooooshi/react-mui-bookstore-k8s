@@ -7,7 +7,7 @@ EXPOSE 3002
 # CMD ["sleep", "3600"]
 # hit an ERR_OSSL_EVP_UNSUPPORTED error
 ENV NODE_OPTIONS=--openssl-legacy-provider
-CMD [ "node", "server.js"]
+CMD [ "npm", "start"]
 
 # docker build -t superheatedboy/tokenapi:latest .
 # docker run -it -p 3002:3002 superheatedboy/tokenapi:latest
