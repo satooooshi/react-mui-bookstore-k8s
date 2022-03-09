@@ -42,3 +42,13 @@ email
 password
 wishlist[product]
 cartId
+
+
+useEffect in detail
+https://zenn.dev/syu/articles/3c4aa813b57b8c
+なぜセットした値が更新されていないのか？
+ex. map of undefined
+なぜセットした値が更新されていないのかというと、setStateで値が更新されるのは関数が呼び出された後だから
+https://gist.github.com/tagty/fbcae0998ad439017fd1ebd119393019
+
+intern

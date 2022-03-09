@@ -1,0 +1,22 @@
+version: '3'
+services:
+  redis:
+    image: "redis:latest"
+    container_name: redis_test #下記のコマンド時に使用するコンテナ名
+    ports:
+      - "6379:6379" #redisのデフォルトのポートは6379
+    volumes:
+      - "./data/redis:/data"
+
+# https://qiita.com/masataka715/items/abfd4b870024cbcebda7
+# docker-compose up -d
+# docker exec -it redis_test /bin/bash
+# redis-cli
+# keys *
+# 0 being the first element,  -1 is the last element of the list
+# lrange mylist 0 -1 fetch all
+# RedisのSorted Set
+# https://uyamazak.hatenablog.com/entry/2020/05/26/164225
+# https://qiita.com/niisan-tokyo/items/170ef3ac47ee39cfb46c
+# zadd zset 3 biz
+# zrangebyscore zset -inf +inf

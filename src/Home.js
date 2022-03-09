@@ -3,14 +3,10 @@ import { styled } from '@mui/material/styles';
 import {Box,Button, Paper, Grid, Rating, Divider,  ButtonGroup } from '@mui/material';
 import { Input, InputAdornment } from '@mui/material';
 
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import Typography from '@mui/material/Typography';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import SearchIcon from '@mui/icons-material/Search';
+
 import SearchBar from './SearchBar'
 import Product from './Product';
+import ProductVisited from './ProductVisited';
 
 import {commerce} from './lib/commerce'
 
@@ -28,28 +24,55 @@ export default function Home({}) {
 
   const [products, setProducts] = useState([])
   const [categories, setCategories] = useState([])
-  const [ loading, setLoading ] = useState(true)
+  const [loading, setLoading] = useState(true)
+
+  const [visited, setVisited] = useState([])
 
   useEffect(() => {
     fetchCategories()
     fetchProductsWithParams()
+    fetchVisitedHistories()
   }, []) // [] is for useEffectをマウント時に1回だけ実行する方法
 
 
   const fetchProductsWithParams = async () => {
     setLoading(true)
     const limit = 50;
-    const categorySlug = 'sweatshirt'
+    //const categorySlug = 'sweatshirt'
     
     commerce.products.list({
       limit: limit,
-      category_slug: categorySlug,
+      //category_slug: categorySlug,
     }).then(response =>{
       console.log(response.data)
       setProducts(response.data)
       setLoading(false)
     });
 
+  }
+
+  const fetchVisitedHistories = async () => {
+    if(localStorage.getItem('token')==null)return 
+    const customerId=localStorage.getItem('token')
+    setLoading(true)
+    const url = new URL(
+      'http://localhost:3005/api/histories/get/visited/'+customerId
+    )
+    let headers = {
+      "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    }
+    fetch(url, {
+      method: "GET",
+      headers: headers,
+    })
+    .then(response => response.json())
+    .then(json => {
+      console.log(json)
+      setVisited(json)
+      setLoading(false)
+    })
   }
 
   const fetchCategories = async () => {
@@ -83,11 +106,11 @@ export default function Home({}) {
           <Item elevation={0} >New Arrival<br/>新作公開後24時間限定10%OFF</Item>
         </Grid>
 
-        <Grid item xs={6} md={12}>
+        <Grid item xs={12} md={12}>
           <Item elevation={0} >
-            <Grid container justify="center" spacing={5} >
+            <Grid container justify="center" spacing={1} >
             {products.map((product,idx) => (
-              <Grid item key={idx} lg={3} >
+              <Grid item key={idx} xs={12} sm={6} md={3} >
                 <Product product={product} />
               </Grid>
             ))}
@@ -96,8 +119,22 @@ export default function Home({}) {
         </Grid>
 
         <Grid item xs={6} md={12}>
-          <Item elevation={0} >過去に見たアイテム</Item>
+          <Item elevation={0} >最近チェックした商品 {visited.length}</Item>
         </Grid>
+
+        <Grid item xs={12} md={12}>
+          <Item elevation={0} >
+            <Grid container justify="center" spacing={1} >
+            {visited.map((elem,idx) => (
+              <Grid item key={idx} xs={12} sm={6} md={3} >
+                <ProductVisited productId={elem.value} />
+              </Grid>
+            ))}
+            </Grid>
+          </Item>
+        </Grid>
+
+
 
         <Grid item xs={6} md={12}>
           <Item elevation={0} >Weekly Ranking<br/>1週間の売れ筋アイテムをご紹介！</Item>
@@ -110,8 +147,8 @@ export default function Home({}) {
         <Grid item xs={6} md={12}>
         <Grid container justifyContent="center" spacing={2}>
         {categories.map((elem,idx) => (
-        <Grid item key={idx} md={3}>
-        <Item>
+        <Grid elevation={0}　item key={idx} md={3}>
+        <Item　elevation={0}　>
         <Grid item md={12} >
           <Item elevation={0} sx={{ height:180,}}><img width="180" height="180"  src={elem?.image} alt="海の写真" title="空と海"/></Item>
         </Grid>

@@ -6,7 +6,7 @@ import {
 } from "react-router-dom"
 
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { green } from '@mui/material/colors'
+import { green, black } from '@mui/material/colors'
 import { Divider, Snackbar, Paper } from '@mui/material'
 
 import Navbar from './components/Navbar/Navbar'
@@ -24,10 +24,10 @@ import ProductReview from './ProductReview'
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#330e62',
+      main: '#3d2842',
     },
     secondary: {
-      main: green[500],
+      main: '#263238',
     },
   },
   typography: {
@@ -43,6 +43,10 @@ const theme = createTheme({
       '"Segoe UI Emoji"',
       '"Segoe UI Symbol"',
     ].join(','),
+    "fontSize": 15,
+    "fontWeightLight": 300,
+    "fontWeightRegular": 300,
+    "fontWeightMedium": 200
   },
   
 })
@@ -66,7 +70,6 @@ export default function App() {
       <Route exact path="/products/:product" element={<ProductDetail />} />
       <Route exact path="/checkout" element={<Checkout />} />
       <Route exact path="/account" element={<MyAccount />} />
-      <Route exact path="/reviews/:productId" element={<ProductReview />} />
       </Routes>
       <Footer title={"Online Fashion Store with React + MUI + k8s"} description={"S.AIKAWA"} />
     </BrowserRouter>

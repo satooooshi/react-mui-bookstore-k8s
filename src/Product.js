@@ -11,10 +11,32 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 
-export default function FullWidthGrid({product}) {
+
+
+
+export default function Product({product}) {
 
   const handleClick = async (event) => {
     console.log(event.target)
+  }
+
+  const addVisited = async (event) => {
+    if(localStorage.getItem('token')==null)return 
+    const customerId=localStorage.getItem('token')
+    const url = new URL(
+      'http://localhost:3005/api/histories/add/visited/'+customerId+'/'+product.id
+    );
+    let headers = {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    };
+  
+    fetch(url, {
+      method: "GET",
+      headers: headers,
+    })
+      .then(response => response.json())
+      .then(json => console.log(json))
   }
 
 
@@ -41,7 +63,7 @@ export default function FullWidthGrid({product}) {
           <Item elevation={0} sx={{ height:30,}}><Button onClick={handleClick} variant="outlined">後で見る</Button></Item>
         </Grid>
         <Grid item md={6}>
-          <Item elevation={0} sx={{ height:30,}}><Button href={"/products/"+product?.id} variant="contained">詳しく</Button></Item>
+          <Item elevation={0} sx={{ height:30,}}><Button href={"/products/"+product?.id} onClick={addVisited} variant="contained">詳しく</Button></Item>
         </Grid>
       </Grid>
     </Paper>

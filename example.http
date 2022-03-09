@@ -162,3 +162,11 @@ content-type: application/json
     "email": "sasa@qq.com",
     "password": "test"
 }
+
+
+###
+
+
+GET http://localhost:3005/api/histories/add/visited/customer3456/product-123456
+###
+GET http://localhost:3005/api/histories/get/visited/customer3456

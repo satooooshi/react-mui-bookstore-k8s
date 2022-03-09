@@ -32,8 +32,6 @@ export default function SearchBar({setSearchTerm}) {
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <Typography>色々な条件で探してみる</Typography>
-          <SearchIcon />
         </AccordionSummary>
         <AccordionDetails>
         <Grid container justifyContent="center" alignItems="center" spacing={2}>
