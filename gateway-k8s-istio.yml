@@ -24,40 +24,40 @@ spec:
   - bookstore-gateway
   http:
 #
-  - name: "productsapi"
+  - name: "customers"
     match:
     - uri:
-        prefix: "/api/products"
+        prefix: "/api/customers"
     route:
     - destination:
         host: productsapi
         port:
-          number: 3001
-#
-  - name: "tokenapi"
-    match:
-    - uri:
-        prefix: "/login"
-    route:
-    - destination:
-        host: tokenapi
-        port:
           number: 3002
 #
-  - name: "reviewsapi"
+  - name: "histories"
+    match:
+    - uri:
+        prefix: "/api/histories"
+    route:
+    - destination:
+        host: histories
+        port:
+          number: 3005
+#
+  - name: "reviews"
     match:
     - uri:
         prefix: "/api/reviews"
     route:
     - destination:
-        host: reviewsapi
+        host: reviews
         port:
           number: 3003
 # default
-  - name: "reactbookfront"
+  - name: "reactfront"
     route:
     - destination:
-        host: reactbookfront
+        host: reactfront
         port:
           number: 3000
 

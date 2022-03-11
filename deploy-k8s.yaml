@@ -2,33 +2,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: reactbookfront
+  name: reactfront
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: reactbookfront
+      app: reactfront
   template:
     metadata:
       labels:
-        app: reactbookfront
+        app: reactfront
     spec:
       containers:
-      - name: reactbookfront
-        image: superheatedboy/reactbookfront:latest
+      - name: reactfront
+        image: superheatedboy/reactfront:latest
         imagePullPolicy: IfNotPresent
         env:
         - name: NODE_OPTIONS
           value: '--openssl-legacy-provider'
-        # REACT_APP_DEV_API_URL is a gateway's URL
-        - name: REACT_APP_DEV_API_URL
-          value: 'http://localhost:3050'
-        - name: REACT_APP_REST_HOST 
-          value: 'http://productsapi'
-        - name: REACT_APP_REST_PORT
-          value: '3001'
-        - name: REACT_APP_DEV_TOKEN_API_URL
-          value: 'http://tokenapi:3002'
         ports:
         - containerPort: 3000
         command: ["npm", "start"]
@@ -37,77 +28,36 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: reactbookfront
+  name: reactfront
 spec:
   type: NodePort
   selector:
-    app: reactbookfront
+    app: reactfront
   ports:
     - port: 3000
       targetPort: 3000
       protocol: TCP
-      name: reactbookfront
+      name: reactfront
 
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: productsapi
+  name: customers
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: productsapi
+      app: customers
   template:
     metadata:
       labels:
-        app: productsapi
+        app: customers
     spec:
       containers:
-      - name: productsapi
-        image: superheatedboy/productsapi:latest
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 3001
-        env:
-        - name: NODE_OPTIONS
-          value: '--openssl-legacy-provider'
-        command: ["npm", "start"]
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: productsapi
-spec:
-  type: NodePort
-  selector:
-    app: productsapi
-  ports:
-    - port: 3001
-      targetPort: 3001
-      protocol: TCP
-      name: productsapi
-
-
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: tokenapi
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: tokenapi
-  template:
-    metadata:
-      labels:
-        app: tokenapi
-    spec:
-      containers:
-      - name: tokenapi
-        image: superheatedboy/tokenapi:latest 
+      - name: customers
+        image: superheatedboy/customers:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3002
@@ -119,36 +69,116 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: tokenapi
+  name: customers
 spec:
   type: NodePort
   selector:
-    app: tokenapi
+    app: customers
   ports:
     - port: 3002
       targetPort: 3002
       protocol: TCP
-      name: tokenapi
+      name: customers
 
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: reviewsapi
+  name: histories
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: reviewsapi
+      app: histories
   template:
     metadata:
       labels:
-        app: reviewsapi
+        app: histories
     spec:
       containers:
-      - name: reviewsapi
-        image: superheatedboy/reviewsapi:latest 
+      - name: histories
+        image: superheatedboy/histories:latest 
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3005
+        env:
+        - name: NODE_OPTIONS
+          value: '--openssl-legacy-provider'
+        - name: REDIS_HOST
+          value: histories-redis
+        - name: REDIS_PORT
+          value: 6379
+        command: ["npm", "start"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: histories
+spec:
+  type: NodePort
+  selector:
+    app: histories
+  ports:
+    - port: 3005
+      targetPort: 3005
+      protocol: TCP
+      name: histories
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: histories-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: histories-redis
+  template:
+    metadata:
+      labels:
+        app: histories-redis
+    spec:
+      containers:
+      - name: histories-redis
+        image: redis:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: histories-redis
+spec:
+  type: NodePort
+  selector:
+    app: histories-redis
+  ports:
+    - port: 6379
+      targetPort: 6379
+      protocol: TCP
+      name: histories-redis
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reviews
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reviews
+  template:
+    metadata:
+      labels:
+        app: reviews
+    spec:
+      containers:
+      - name: reviews
+        image: superheatedboy/reviews:latest 
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3003
@@ -160,16 +190,16 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: reviewsapi
+  name: reviews
 spec:
   type: NodePort
   selector:
-    app: reviewsapi
+    app: reviews
   ports:
     - port: 3003
       targetPort: 3003
       protocol: TCP
-      name: reviewsapi
+      name: reviews
 
 
 ---
@@ -184,5 +214,5 @@ spec:
     image: busybox
     args:
     - sleep
-    - "1000000"
+    - "3600"
 #EOF
