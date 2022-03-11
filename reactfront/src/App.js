@@ -24,7 +24,7 @@ import ProductReview from './ProductReview'
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#3d2842',
+      main: '#212121',
     },
     secondary: {
       main: '#263238',
@@ -57,7 +57,6 @@ export default function App() {
     <ThemeProvider theme={theme}>
     <BrowserRouter>
       <Navbar />
-      <br/>
       <br/>
       <br/>
       <Divider sx={{margin:'10px'}}/>

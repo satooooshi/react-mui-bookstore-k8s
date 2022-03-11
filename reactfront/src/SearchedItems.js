@@ -74,12 +74,14 @@ export default function FullWidthGrid() {
           <Item elevation={0} ><SearchBar setSearchTerm={setSearchTerm} /></Item>
         </Grid>
 
+        {/* 
         <Grid item xs={6} md={12}>
           <Item elevation={0} >サブカテゴリで探す</Item>
         </Grid>
         <Grid item xs={6} md={12}>
           <Item elevation={0} ><SubCategories elems={["turtleneck", "sweatshirt", "fleece" ]} /></Item>
         </Grid>
+        */}
 
         <Grid item xs={12} md={12}>
           <Item elevation={0}><Divider/><SortButtons setSortItem={setSortItem} elems={['価格が安い順', '価格が高い順','新しい順', '人気順']}/><Divider/></Item>

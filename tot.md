@@ -52,3 +52,13 @@ ex. map of undefined
 https://gist.github.com/tagty/fbcae0998ad439017fd1ebd119393019
 
 intern
+
+async関数においてtry/catchではなくawait/catchパターンを活用する
+https://qiita.com/akameco/items/cc73afcdb5ac5d0774bc
+
+fetch() はサーバー側でエラーが起こってもレスポンスを reject してくれないということです。
+レスポンスをreject してくれないということは、catch() の中でエラー処理できないということであり、then() の方にレスポンスが流れて行ってしまうということです。
+Fetch API の仕様であり、正しい動作のよう
+fetch() が結果を reject() するのはネットワークエラーのときだけ
+サーバー側の処理が正常に行われたかどうかは、response.ok を見れば判断できる
+https://blog.mudatobunka.org/entry/2016/04/26/092518

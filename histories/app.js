@@ -14,7 +14,7 @@ app.listen(port, host, () => console.log('API is running on '+host+':'+port))
 
 
 app.get('/api/histories/hello', function (req, res) {
-  res.send({
+  return res.send({
     data:'hello histories'
   })
 })
@@ -25,7 +25,7 @@ app.get('/api/histories/add/visited/:customerId/:productId', function (req, res)
   const productId = req.params.productId
   const visited = Date.now()
   addToSortedSet(customerId, productId, visited)
-  res.send({
+  return res.send({
     customer_id: customerId,
     product_id: productId,
     visited_date: visited
@@ -47,7 +47,7 @@ app.get('/api/histories/get/visited/:customerId', function (req, res) {
     }
     await client.quit()
     console.log(arr)
-    res.send(arr)
+    return res.send(arr)
   }
   getSortedSet()
 })

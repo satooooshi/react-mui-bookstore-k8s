@@ -24,24 +24,14 @@ let customers=[
   },
 ]
 
-/*
-  {
-    customer_id: 'customer_6af23ff4-43f9-4eec-8108-10c7a0ae5a64',
-    username: 'Gina_Greenfelder',
-    email: 'Michele99@example.com',
-    password: 'Gina_GreenfelderMichele99@example.com',
-    token: 'Gina_GreenfelderMichele99@example.com'
-  }
- */
-
   app.get('/api/customers/hello', function (req, res) {
-    res.send({
+    return res.send({
       data:'hello customers'
     })
   })
 
 app.use('/api/testlogin', (req, res) => {
-  res.send(customers);
+  return res.send(customers);
 });
 
 app.get('/api/login/:email/:password', (req, res) => {
@@ -51,14 +41,14 @@ app.get('/api/login/:email/:password', (req, res) => {
   
   for(let i=0;i<customers.length;i++){
     if( customers[i].email===email && customers[i].password===password ){
-      res.send({
+      return res.send({
         customer_id: customers[i].customer_id,
         cart_id: customers[i].cart_id
       })
     }
   }
 
-  res.send({
+  return res.send({
     customer_id: undefined
   })
   
@@ -72,11 +62,11 @@ app.get('/api/cart/:customerId/:cartId', (req, res) => {
   for(let i=0;i<customers.length;i++){
     if( customers[i].customer_id===customerId ){
       customers[i].cart_id=cartId
-      res.send(customers[i])
+      return res.send(customers[i])
     }
   }
 
-  res.status(400).send({
+  return res.status(400).send({
     message: 'customerId provided not found.'
   })
   
@@ -93,7 +83,7 @@ app.get('/api/register/:customerId/:email/:firstname/:lastname/:password', (req,
 
   for(let i=0;i<customers.length;i++){
     if( customers[i].email===email ){
-      res.status(400).send({
+      return res.status(400).send({
         message: 'The Email already registered'
      });
      return 
@@ -109,7 +99,7 @@ app.get('/api/register/:customerId/:email/:firstname/:lastname/:password', (req,
     password:password
   })
 
-  res.send({
+  return res.send({
     customer_id:customer_id,
     firstname:firstname,
     lastname:lastname,

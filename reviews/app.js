@@ -29,7 +29,7 @@ var requestTime = function (req, res, next) {
 app.use(requestTime)
 
 app.get('/api/reviews/hello', function (req, res) {
-  res.send({
+  return res.send({
     data:'hello reviews'
   })
 })
@@ -42,7 +42,7 @@ function getReviewsByProductId(productId) {
 
 app.get('/api/reviews/:productId', function (req, res) {
   console.log(req.params.productId)
-  res.send(getReviewsByProductId(req.params.productId))
+  return res.send(getReviewsByProductId(req.params.productId))
 })
 
 

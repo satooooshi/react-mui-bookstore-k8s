@@ -7,6 +7,7 @@ import { Input, InputAdornment } from '@mui/material';
 import SearchBar from './SearchBar'
 import Product from './Product';
 import ProductVisited from './ProductVisited';
+import Hero from './Hero'
 
 import {commerce} from './lib/commerce'
 
@@ -27,6 +28,8 @@ export default function Home({}) {
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
 
+  const [searchTerm, setSearchTerm] = useState('')
+
   const [visited, setVisited] = useState([])
 
   useEffect(() => {
@@ -34,25 +37,41 @@ export default function Home({}) {
     fetchCategories()
     fetchProductsWithParams()
     fetchVisitedHistories()
+    fetchhh()
+
+ 
+    
   }, []) // [] is for useEffectをマウント時に1回だけ実行する方法
 
-  const apitest = async () => {
-    const url = new URL(
-      process.env.REACT_APP_API_NGINX_RP_URL+'/api/customers/hello'
-    )
-    let headers = {
-      "Accept": "application/json",
-      "Content-Type": "application/json",
+
+  const fetchhh = async () => {
+    try {
+      const response = await fetch('http://localhost:3002/api/customers/hello', {
+        method: 'GET',
+        headers:  {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+        }
+      });
+  
+      const parsed =  response.json(); //json method returns a Promise!
+      
+      const {
+        status
+      } = response;
+  
+        console.log(parsed)
+      if (status === 201) {
+        return //successCallback(parsed);
+      }
+  
+      throw new Error(parsed);
+  
+    } catch (error) {
+      return console.log(error)//errorCallback(error);
     }
-    fetch(url, {
-      method: "GET",
-      headers: headers,
-    })
-    .then(response => response.json())
-    .then(json => {
-      console.log(json)
-    })
   }
+
 
   const fetchProductsWithParams = async () => {
     setLoading(true)
@@ -114,11 +133,13 @@ export default function Home({}) {
       <Grid container spacing={1} justify="center" alignItems="center" >
 
         <Grid item xs={6} md={12}>
-          <Item elevation={0} >韓国ファッションメンズ通販サイト</Item>
+          <Item elevation={0} ><Hero/></Item>
         </Grid>
 
         <Grid item xs={6} md={12}>
-          <Item elevation={0} ><SearchBar/></Item>
+          <a id="main-list">
+          <Item elevation={0} ><SearchBar setSearchTerm={setSearchTerm} /></Item>
+          </a>
         </Grid>
 
         <Grid item xs={6} md={12}>
@@ -128,7 +149,19 @@ export default function Home({}) {
         <Grid item xs={12} md={12}>
           <Item elevation={0} >
             <Grid container justify="center" spacing={1} >
-            {products.map((product,idx) => (
+            {products
+                      .filter((product) => {
+                        if (searchTerm === "") {
+                          return product;
+                        } else if (
+                          product.name
+                            .toLowerCase()
+                            .includes(searchTerm.toLocaleLowerCase())
+                        ) {
+                          return product;
+                        }
+                      })
+            .map((product,idx) => (
               <Grid item key={idx} xs={12} sm={6} md={3} >
                 <Product product={product} />
               </Grid>

@@ -25,15 +25,6 @@ const Item = styled(Paper)(({ theme }) => ({
 export default function SearchBar({setSearchTerm}) {
 
   return (
-    <div>
-      <Accordion elevation={0} expanded={true} position="fixed">
-        
-        <AccordionSummary
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-        >
-        </AccordionSummary>
-        <AccordionDetails>
         <Grid container justifyContent="center" alignItems="center" spacing={2}>
         <Grid item md={12}>
         <Input
@@ -60,11 +51,6 @@ export default function SearchBar({setSearchTerm}) {
         <VariantButtonGroup elems={['down','sweatshirt','turtleneck']} />
         </Grid>
       </Grid>
-      <br/>
-        </AccordionDetails>
-      </Accordion>
-     
-    </div>
   );
 }
 
