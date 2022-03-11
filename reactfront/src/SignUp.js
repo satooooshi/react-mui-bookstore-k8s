@@ -19,6 +19,8 @@ export default function SignUp() {
   // signUp
   const handleSignUp =  async (event) => {
 
+    let succ=false
+
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     for (var value of data.values()) {
@@ -142,6 +144,8 @@ export default function SignUp() {
           if(json?.cart_id!==undefined){
             console.log(json);
             localStorage.setItem('cart_id', cartId)
+            succ=true
+            window.location.href="/"
           }else{
             setErrMsg('update customer cart failed')
             return 
@@ -154,8 +158,30 @@ export default function SignUp() {
         return 
       }
 
+      if(succ){
+        window.location.href="/"
+      }else{
+        /*
+        localStorage.removeItem('token')
+        localStorage.removeItem('cart_id')
 
-      window.location.href="/"
+        const url = new URL(
+          "https://api.chec.io/v1/customers/"+customerId
+        );
+        let headers = {
+          "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+        }
+        fetch(url, {
+          method: "DELETE",
+          headers: headers,
+        })
+          .then(response => response.json())
+          .then(json => console.log(json));
+          */
+      }
+      
 
   }
 
@@ -278,6 +304,8 @@ export default function SignUp() {
       })        
 
   }
+
+  if(localStorage.getItem('token'))window.location.href="/account"
 
   return (        
     <Paper

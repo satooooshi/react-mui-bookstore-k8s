@@ -47,7 +47,7 @@ export default function ProdcutDetail() {
 
 
   const handleChange = (event) => {
-    console.log(event.target.value)
+    //console.log(event.target.value)
     setSelected(event.target.value)
   };
 
@@ -102,14 +102,14 @@ export default function ProdcutDetail() {
            return {variant_id:variant.id, options:variant.options}
           })
           setVariants(newVariants)
-          console.log(newVariants)
+          //console.log(newVariants)
         });
 
     });
   }
 
   const handleClick = (event) => {
-    console.log(event.target.src)
+    //console.log(event.target.src)
     setSelectedImage(event.target.src)
 
   }; 

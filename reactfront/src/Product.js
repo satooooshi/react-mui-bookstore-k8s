@@ -20,7 +20,7 @@ export default function Product({product}) {
     if(localStorage.getItem('token')==null)return 
     const customerId=localStorage.getItem('token')
     const url = new URL(
-      process.env.REACT_APP_HISTORIES_API+'/api/histories/add/visited/'+customerId+'/'+product.id
+      process.env.REACT_APP_HISTORIES_API_URL+'/api/histories/add/visited/'+customerId+'/'+product.id
     );
     let headers = {
       "Accept": "application/json",

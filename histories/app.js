@@ -1,7 +1,15 @@
 
 // https://github.com/redis/node-redis
 import { createClient } from 'redis'
-const client = createClient()
+
+let client;
+if(process.env.REDIS_HOST!==undefined && process.env.REDIS_PORT!==undefined ){
+  client = createClient({
+    url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`
+  })
+}else{
+  client = createClient()
+}
 
 import express from "express"
 const app = express()
@@ -20,7 +28,7 @@ app.get('/api/histories/hello', function (req, res) {
 })
 
 app.get('/api/histories/add/visited/:customerId/:productId', function (req, res) {
-  //console.log(req.params)
+  console.log(req.params)
   const customerId = req.params.customerId
   const productId = req.params.productId
   const visited = Date.now()
@@ -33,7 +41,7 @@ app.get('/api/histories/add/visited/:customerId/:productId', function (req, res)
 })
 
 app.get('/api/histories/get/visited/:customerId', function (req, res) {
-  //console.log(req.params)
+  console.log(req.params)
   const customerId = req.params.customerId
   async function getSortedSet() {
     await client.connect()

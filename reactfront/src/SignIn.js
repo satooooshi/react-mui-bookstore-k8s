@@ -59,6 +59,8 @@ export default function SignIn() {
 
 }
 
+  if(localStorage.getItem('token'))window.location.href="/account"
+  
   return (        
     <Paper
     elevation={0}
