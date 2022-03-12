@@ -25,7 +25,7 @@ export default function SignUp() {
     // update customer api cart
     // save into localStorage
 
-    let succ=false
+    let succe=0
 
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -92,7 +92,7 @@ export default function SignUp() {
           "Content-Type": "application/json  charset=UTF-8",
           "Accept": "application/json",
         };
-        fetch(url, {
+        await fetch(url, {
           method: "GET",
           headers: headers
         })
@@ -141,7 +141,7 @@ export default function SignUp() {
           "Content-Type": "application/json  charset=UTF-8",
           "Accept": "application/json",
         };
-        fetch(url, {
+        await fetch(url, {
           method: "GET",
           headers: headers
         })
@@ -150,8 +150,7 @@ export default function SignUp() {
           if(json?.cart_id!==undefined){
             console.log(json);
             localStorage.setItem('cart_id', cartId)
-            succ=true
-            window.location.href="/"
+            succe=true
           }else{
             setErrMsg('update customer cart failed')
             return 
@@ -164,8 +163,8 @@ export default function SignUp() {
         return 
       }
 
-      if(succ===true){
-        //window.location.href="/"
+      if(succe===true){
+        window.location.href="/"
       }else{
         localStorage.removeItem('token')
         localStorage.removeItem('cart_id')
@@ -179,7 +178,7 @@ export default function SignUp() {
           "Accept": "application/json",
           "Content-Type": "application/json",
         }
-        fetch(url, {
+        await fetch(url, {
           method: "DELETE",
           headers: headers,
         })
@@ -194,14 +193,14 @@ export default function SignUp() {
         // delete customer API's customer
         try{
           const url = new URL(
-            process.env.REACT_APP_CUSTOMERS_API_URL+'/api/customers/delete/:customerId'+customerId
+            process.env.REACT_APP_CUSTOMERS_API_URL+'/api/customers/delete/'+customerId
           );
           let headers = {
             "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
             "Accept": "application/json",
             "Content-Type": "application/json",
           }
-          fetch(url, {
+          await fetch(url, {
             method: "DELETE",
             headers: headers,
           })

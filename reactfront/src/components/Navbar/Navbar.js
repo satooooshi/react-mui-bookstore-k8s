@@ -21,9 +21,11 @@ import {commerce} from '../../lib/commerce'
 export default function PrimarySearchAppBar({totalItems}) {
 
   const [loading, setLoading] = useState(true)
+  const [customer, setCustomer] = useState({})
 
   useEffect(() => {
     createGuestCart()
+    getCustomerInfo()
   }, []) // [] is for useEffectをマウント時に1回だけ実行する方法
 
   const createGuestCart = async () => {
@@ -35,6 +37,29 @@ export default function PrimarySearchAppBar({totalItems}) {
       localStorage.setItem('cart_id', cart.id)
     setLoading(false)
     })
+  }
+
+  const getCustomerInfo = async () => {
+    if(localStorage.getItem('token')===null)return
+    let customerId=localStorage.getItem('token')
+    const url = new URL(
+      "https://api.chec.io/v1/customers/"+customerId
+    );
+  
+    let headers = {
+      "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    };
+  
+    await fetch(url, {
+      method: "GET",
+      headers: headers,
+    })
+      .then(response => response.json())
+      .then(json => {
+        setCustomer(json);
+      });
   }
 
   return (
@@ -57,7 +82,7 @@ export default function PrimarySearchAppBar({totalItems}) {
             noWrap
             sx={{ display: { xs: 'none', sm: 'block' , textDecoration:'none', color:'white'} }}
           >
-            Hello, {localStorage.getItem('token')===null?"Guest":localStorage.getItem('token')}
+            Hello, {customer?.id===undefined?"Guest":customer.email}
           </Typography>
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <IconButton

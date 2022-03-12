@@ -154,18 +154,18 @@ export default function Checkout() {
     console.log(customerId)
     const url = new URL(
       "https://api.chec.io/v1/customers/"+customerId
-  );
+    );
   
-  let headers = {
+    let headers = {
       "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
       "Accept": "application/json",
       "Content-Type": "application/json",
-  };
+    };
   
-  fetch(url, {
+    fetch(url, {
       method: "GET",
       headers: headers,
-  })
+    })
       .then(response => response.json())
       .then(json => {
         console.log(json);

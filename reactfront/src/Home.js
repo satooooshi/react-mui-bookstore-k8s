@@ -74,9 +74,9 @@ export default function Home({}) {
         </Grid>
 
         <Grid item xs={6} md={12}>
-          <a id="main-list">
+          <a id="main-list" />
           <Item elevation={0} ><SearchBar setSearchTerm={setSearchTerm} /></Item>
-          </a>
+          
         </Grid>
 
         <Grid item xs={6} md={12}>
