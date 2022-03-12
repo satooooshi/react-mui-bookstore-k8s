@@ -19,6 +19,12 @@ export default function SignUp() {
   // signUp
   const handleSignUp =  async (event) => {
 
+    // create chec customer
+    // create customer api customer
+    // create cart
+    // update customer api cart
+    // save into localStorage
+
     let succ=false
 
     event.preventDefault();
@@ -80,7 +86,7 @@ export default function SignUp() {
       // save into customer API
       try {
         const url = new URL(
-          process.env.REACT_APP_CUSTOMERS_API_URL+"/api/register/"+customerId+"/"+email+"/"+firstname+"/"+lastname+"/"+password
+          process.env.REACT_APP_CUSTOMERS_API_URL+"/api/customers/register/"+customerId+"/"+email+"/"+firstname+"/"+lastname+"/"+password
         );
         let headers = {
           "Content-Type": "application/json  charset=UTF-8",
@@ -129,7 +135,7 @@ export default function SignUp() {
       // update customer's cart
       try {
         const url = new URL(
-          process.env.REACT_APP_CUSTOMERS_API_URL+"/api/cart/"+customerId+"/"+cartId
+          process.env.REACT_APP_CUSTOMERS_API_URL+"/api/customers/cart/"+customerId+"/"+cartId
         );
         let headers = {
           "Content-Type": "application/json  charset=UTF-8",
@@ -158,13 +164,13 @@ export default function SignUp() {
         return 
       }
 
-      if(succ){
-        window.location.href="/"
+      if(succ===true){
+        //window.location.href="/"
       }else{
-        /*
         localStorage.removeItem('token')
         localStorage.removeItem('cart_id')
-
+        // delete chec customer
+        try{
         const url = new URL(
           "https://api.chec.io/v1/customers/"+customerId
         );
@@ -179,131 +185,40 @@ export default function SignUp() {
         })
           .then(response => response.json())
           .then(json => console.log(json));
-          */
-      }
-      
-
-  }
-
-  // signUp
-  const createCustomer =  async (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    for (var value of data.values()) {
-        console.log(value);
-    }
-    let firstname=data.get('firstname')
-    let lastname=data.get('lastname')
-    let email=data.get('email')
-    let password=data.get('password')
-
-    const url = new URL(
-      "https://api.chec.io/v1/customers"
-  );
-  
-  let headers = {
-      "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
-      "Content-Type": "application/json",
-      "Accept": "application/json",
-  };
-  
-  let body = {
-      "email": email,
-      "firstname": firstname,
-      "lastname": lastname,
-      "external_id": "MY_CRM_USER_123"
-  }
-  
-  let customerId=undefined
-  fetch(url, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify(body)
-  })
-      .then(response => response.json())
-      .then(json => {
-        console.log(json);
-        customerId=json.id
-        if(customerId!==undefined){
-          //console.log("signup success")
-          //Get customer
+        } catch (err) {
+          //handleErr1(err)
+          console.log(err)
+          setErrMsg('network error')
+          return 
+        }
+        // delete customer API's customer
+        try{
           const url = new URL(
-            "https://api.chec.io/v1/customers/"+customerId
-        );
-        
-        let headers = {
+            process.env.REACT_APP_CUSTOMERS_API_URL+'/api/customers/delete/:customerId'+customerId
+          );
+          let headers = {
             "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
             "Accept": "application/json",
             "Content-Type": "application/json",
-        };
-        
-        fetch(url, {
-            method: "GET",
+          }
+          fetch(url, {
+            method: "DELETE",
             headers: headers,
-        })
+          })
             .then(response => response.json())
-            .then(json => {
-              //console.log(json);
-              localStorage.setItem('token',json.id)
-
-              // add chec customer to self-proviced auth API to allow authentication with email and password
-              //addCustomerToAuthApi({customer_id:resultChec.id, email:resultChec.email, firstname, lastname, password})
-              const customerId=json.id
-              const url2 = new URL(
-                process.env.REACT_APP_CUSTOMERS_API_URL+"/api/register/"+customerId+"/"+email+"/"+firstname+"/"+lastname+"/"+password
-              );
-
-              let headers2 = {
-                "Content-Type": "application/json  charset=UTF-8",
-                "Accept": "application/json",
-              };
-
-              fetch(url2, {
-                method: "GET",
-                headers: headers2
-              })
-              .then(response => response.json())
-              .then(json => {
-                  console.log(json);
-                  const createCart = async () => {
-                    // Retrieve the customers current cart (tracked by their browser)
-                    await commerce.cart.refresh()
-                    .then(cart => {
-                        console.log(cart)
-                        localStorage.setItem('cart_id', cart.id)
-                        const url3 = new URL(
-                          process.env.REACT_APP_CUSTOMERS_API_URL+"/api/cart/"+customerId+"/"+cart.id
-                        );
-          
-                        let headers3 = {
-                          "Content-Type": "application/json  charset=UTF-8",
-                          "Accept": "application/json",
-                        };
-          
-                        fetch(url3, {
-                          method: "GET",
-                          headers: headers3
-                        })
-                        .then(response => response.json())
-                        .then(json => {
-                            console.log(json);
-                            window.location.href="/"
-                        });
-
-                    });
-                  }
-                  createCart()
-
-              });
-
-              })
-
-        }else{
-          console.log("signup failed")
-        }
-      })        
+            .then(json => console.log(json));
+          } catch (err) {
+            //handleErr1(err)
+            console.log(err)
+            setErrMsg('network error')
+            return 
+          }
+          // delete cart (optional)
+          // delete cart info in customer API
+      }
 
   }
+
 
   if(localStorage.getItem('token'))window.location.href="/account"
 

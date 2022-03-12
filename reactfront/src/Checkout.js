@@ -40,6 +40,7 @@ export default function Checkout() {
   const [firstname, setFirstname] = useState('');
   const [lastname, setLastname] = useState('');
   const [email, setEmail] = useState('');
+  const [postcode, setPostcode] = useState('');
   const [address1, setAddress1] = useState('');
   const [shippingCountries, setShippingCountries] = useState([]);
   const [shippingCountry, setShippingCountry] = useState('');
@@ -62,6 +63,20 @@ export default function Checkout() {
     //そのため、event.preventDefault()を呼び出し、デフォルトの動作をキャンセルしていました。 
     //event.preventDefault()をコメントアウトすると、ページがリロードされてしまうことが確認できます。
     event.preventDefault();
+    const data = new FormData(event.currentTarget)
+    for (var value of data.values()) {
+        console.log(value)
+    }
+    const orderData={
+      firstname: data.get('firstname'),
+      lastname: data.get('lastname'),
+      email: data.get('email'),
+      postcode: data.get('postcode'),
+      address1: data.get('address1'),
+      shippingCountry: data.get('shippingCountry'),
+      shippingSubdivision: data.get('shippingSubdivision')
+    }
+    console.log(orderData)
 
     if (!stripe || !elements) return;
 
@@ -99,21 +114,19 @@ export default function Checkout() {
             payment_method_id: paymentMethod.id,
           },
         },
-        
-        
         */
       };
-
       handleCaptureCheckout(checkoutToken.id, orderData);
-
     }
   };
 
   useEffect(() => {
-    
+    const cartId=localStorage.getItem('cart_id');
+    if(cartId===null)window.location.href="/signin"
+    // create checkouttoken from customer cart
     const fetchCart = async () => {
       // Retrieve the customers current cart (tracked by their browser)
-      await commerce.cart.retrieve().then(cart => {
+      await commerce.cart.retrieve(cartId).then(cart => {
         console.log(cart)
         //console.log(JSON.stringify(cart, null, 2))
         setCart(cart)
@@ -130,7 +143,6 @@ export default function Checkout() {
         }
       };
       generateCheckoutToken();
-
     }
       });
     }
@@ -166,9 +178,6 @@ export default function Checkout() {
 
   }, []) // [] is for useEffectをマウント時に1回だけ実行する方法
 
-
-
-
   const handleCaptureCheckout = async (checkoutTokenId, newOrder) => {
     try {
       // Captures an order and payment by converting a checkout token and necessary data into an order object, and charging all related transactions.
@@ -183,7 +192,7 @@ export default function Checkout() {
             localStorage.setItem('cart_id', cart.id)
             const customerId=localStorage.getItem('token')
             const url3 = new URL(
-              process.env.REACT_APP_CUSTOMERS_API+"/api/cart/"+customerId+"/"+cart.id
+              process.env.REACT_APP_CUSTOMERS_API+"/api/customers/cart/"+customerId+"/"+cart.id
             );
 
             let headers3 = {
@@ -221,10 +230,9 @@ export default function Checkout() {
     }} >
       <Grid container spacing={0} justifyContent="center" alignItems="center">
 
-
         <Grid item md={7} >
         <Item elevation={0} >
-        <Grid component="form" noValidate onSubmit={handleSubmit} container spacing={2} justifyContent='center' alignItems='center' >
+        <Grid component="form" noValidate onSubmit={handleSubmitTest} container spacing={2} justifyContent='center' alignItems='center' >
 
         <Grid item xs={6} md={12}>
         <Item elevation={0} ><Typography variant="h5">お届け先</Typography></Item>
@@ -260,10 +268,10 @@ export default function Checkout() {
         <TextField
         required
         fullWidth
-        id="address1"
+        id="postcode"
         label="郵便番号"
-        name="address1"
-        onChange={(e) => setEmail(e.target.value)}
+        name="postcode"
+        onChange={(e) => setPostcode(e.target.value)}
         helperText="Enter your email"
         />
         </Grid>
@@ -274,7 +282,7 @@ export default function Checkout() {
         id="address1"
         label="住所"
         name="address1"
-        onChange={(e) => setEmail(e.target.value)}
+        onChange={(e) => setAddress1(e.target.value)}
         helperText="Enter your email"
         />
         </Grid>
@@ -375,19 +383,23 @@ export default function Checkout() {
 }
 
 // for testing form fubmission
-const handleSubmit = (event) => {
+const handleSubmitTest = (event) => {
   event.preventDefault();
-  const data = new FormData(event.currentTarget);
-  // eslint-disable-next-line no-console
-  console.log({
+  const data = new FormData(event.currentTarget)
+  for (var value of data.values()) {
+      console.log(value)
+  }
+  const orderData={
+    firstname: data.get('firstname'),
+    lastname: data.get('lastname'),
     email: data.get('email'),
-    password: data.get('password'),
-  });
+    postcode: data.get('postcode'),
+    address1: data.get('address1'),
+    shippingCountry: data.get('shippingCountry'),
+    shippingSubdivision: data.get('shippingSubdivision')
+  }
+  console.log(orderData)
 };
-
-
-
-
 
 
 const StyledModal = styled(ModalUnstyled)`

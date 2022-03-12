@@ -14,7 +14,55 @@ const Item = styled(Paper)(({ theme }) => ({
 
 
 
-export default function ProductVisited({productId}) {
+
+export default function VisitedProducts() {
+
+  const [loading, setLoading] = useState(true)
+  const [productIds, setProductIds] = useState([])
+
+  useEffect(() => {
+    fetchVisitedHistories()
+  }, []) // [] is for useEffectをマウント時に1回だけ実行する方法
+
+  const fetchVisitedHistories = async () => {
+    if(localStorage.getItem('token')==null)return 
+    const customerId=localStorage.getItem('token')
+    setLoading(true)
+    const url = new URL(
+      process.env.REACT_APP_HISTORIES_API_URL+'/api/histories/get/visited/'+customerId
+    )
+    let headers = {
+      "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    }
+    fetch(url, {
+      method: "GET",
+      headers: headers,
+    })
+    .then(response => response.json())
+    .then(json => {
+      console.log(json)
+      setProductIds(json)
+      setLoading(false)
+
+    })
+  }
+
+  if(loading)return 'loading'
+  return (
+    <Grid container justify="center" spacing={1} >
+    {productIds.map((id,idx) => (
+      <Grid item key={idx} xs={12} sm={6} md={3} >
+        <VisitedItem productId={id} />
+      </Grid>
+    ))}
+    </Grid>
+  );
+}
+
+
+function VisitedItem({productId}) {
 
   const [product, setProduct] = React.useState({})
   const [loading, setLoading] = React.useState(true)

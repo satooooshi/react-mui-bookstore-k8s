@@ -6,7 +6,7 @@ import { Input, InputAdornment } from '@mui/material';
 
 import SearchBar from './SearchBar'
 import Product from './Product';
-import ProductVisited from './ProductVisited';
+import VisitedProducts from './VisitedProducts';
 import Hero from './Hero'
 
 import {commerce} from './lib/commerce'
@@ -30,48 +30,11 @@ export default function Home({}) {
 
   const [searchTerm, setSearchTerm] = useState('')
 
-  const [visited, setVisited] = useState([])
 
   useEffect(() => {
-    //apitest()
     fetchCategories()
     fetchProductsWithParams()
-    fetchVisitedHistories()
-    fetchhh()
-
- 
-    
   }, []) // [] is for useEffectをマウント時に1回だけ実行する方法
-
-
-  const fetchhh = async () => {
-    try {
-      const response = await fetch('http://localhost:3002/api/customers/hello', {
-        method: 'GET',
-        headers:  {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-        }
-      });
-  
-      const parsed =  response.json(); //json method returns a Promise!
-      
-      const {
-        status
-      } = response;
-  
-        console.log(parsed)
-      if (status === 201) {
-        return //successCallback(parsed);
-      }
-  
-      throw new Error(parsed);
-  
-    } catch (error) {
-      return console.log(error)//errorCallback(error);
-    }
-  }
-
 
   const fetchProductsWithParams = async () => {
     setLoading(true)
@@ -86,31 +49,6 @@ export default function Home({}) {
       setProducts(response.data)
       setLoading(false)
     });
-
-  }
-
-  const fetchVisitedHistories = async () => {
-    if(localStorage.getItem('token')==null)return 
-    const customerId=localStorage.getItem('token')
-    setLoading(true)
-    const url = new URL(
-      process.env.REACT_APP_HISTORIES_API_URL+'/api/histories/get/visited/'+customerId
-    )
-    let headers = {
-      "X-Authorization": "sk_test_39980259115a0d9753812433d6740aa60b83dc9a64fba",
-      "Accept": "application/json",
-      "Content-Type": "application/json",
-    }
-    fetch(url, {
-      method: "GET",
-      headers: headers,
-    })
-    .then(response => response.json())
-    .then(json => {
-      console.log(json)
-      setVisited(json)
-      setLoading(false)
-    })
   }
 
   const fetchCategories = async () => {
@@ -124,7 +62,6 @@ export default function Home({}) {
 
 
   if(loading)return 'loading'
-
   return (
     <Paper elevation={0} sx={{
       flexGrow: 1,
@@ -171,18 +108,12 @@ export default function Home({}) {
         </Grid>
 
         <Grid item xs={6} md={12}>
-          <Item elevation={0} >最近チェックした商品 {visited.length}</Item>
+          <Item elevation={0} >最近チェックした商品</Item>
         </Grid>
 
         <Grid item xs={12} md={12}>
           <Item elevation={0} >
-            <Grid container justify="center" spacing={1} >
-            {visited.map((elem,idx) => (
-              <Grid item key={idx} xs={12} sm={6} md={3} >
-                <ProductVisited productId={elem.value} />
-              </Grid>
-            ))}
-            </Grid>
+            <VisitedProducts />
           </Item>
         </Grid>
 

@@ -19,7 +19,6 @@ import SignIna from './SignIn'
 import SearchedItems from './SearchedItems'
 import Checkout from './Checkout'
 import MyAccount from './MyAccount'
-import ProductReview from './ProductReview'
 
 const theme = createTheme({
   palette: {

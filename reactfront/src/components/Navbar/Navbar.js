@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react'
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -16,9 +16,26 @@ import {
   Navigate
 } from "react-router-dom"
 
-
+import {commerce} from '../../lib/commerce'
 
 export default function PrimarySearchAppBar({totalItems}) {
+
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    createGuestCart()
+  }, []) // [] is for useEffectをマウント時に1回だけ実行する方法
+
+  const createGuestCart = async () => {
+    if(localStorage.getItem('token')!==null)return
+    setLoading(true)
+    console.log('creating guest cart')
+    await commerce.cart.retrieve().then(cart => {
+      console.log(cart)
+      localStorage.setItem('cart_id', cart.id)
+    setLoading(false)
+    })
+  }
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -27,7 +44,6 @@ export default function PrimarySearchAppBar({totalItems}) {
           <Typography
             variant="h6"
             noWrap
-            component="div"
             sx={{ display: { xs: 'none', sm: 'block' , textDecoration:'none', color:'white'} }}
             component={Link} to="/"
           >
@@ -36,6 +52,13 @@ export default function PrimarySearchAppBar({totalItems}) {
 
 
           <Box sx={{ flexGrow: 1 }} />
+          <Typography
+            variant="h6"
+            noWrap
+            sx={{ display: { xs: 'none', sm: 'block' , textDecoration:'none', color:'white'} }}
+          >
+            Hello, {localStorage.getItem('token')===null?"Guest":localStorage.getItem('token')}
+          </Typography>
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <IconButton
               href="/account"
