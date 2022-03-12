@@ -1,4 +1,4 @@
-#  online bookstore with React+MUI+k8s
+#  online store with React+MUI+k8s
 
 https://reactrouter.com/docs/en/v6/getting-started/overview 
 https://dev.classmethod.jp/articles/react-router-5to6/
